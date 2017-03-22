@@ -1,0 +1,6 @@
+EXEC_DIR==/home/pi/Documents/arduino-1.8.2
+EXEC_LIBS==/home/pi/Arduino/libraries
+BOARD==mega
+BAUDRATE==115200
+PORT==DEFAULT
+SKETCH_DIR==arduino/motor_control
