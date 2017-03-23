@@ -22,29 +22,29 @@ class ScrapInterface(object):
 
 	### reset arm position and recalibrate zero
 	def reset(self):
-		return movement.reset()
+		return movement.doCommand("R")
 
 
 	### absolute positioning
 	def set_x(self,x_inp):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0:
-			return movement.set_x(x_inp)
+			return movement.doCommand("sX",[x_inp])
 		else:
 			raise ScrapException("x_inp is out of bounds")
 
 
 	def set_y(self,y_inp):
 		if int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:
-			return movement.set_y(y_inp)
+			return movement.doCommand("sY",[y_inp])
 		else:
 			raise ScrapException("y_inp is out of bounds")
 
 
 	def set_coords(self,x_inp,y_inp):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0 and int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:
-			return movement.set_coords(x_inp,y_inp)
+			return movement.doCommand("sC",[x_inp,y_inp])
 		else:
-			raise ScrapException("y_inp is out of bounds")
+			raise ScrapException("x_inp or y_inp is out of bounds")
 
 
 	def set_coords(self,coords):
@@ -54,22 +54,22 @@ class ScrapInterface(object):
 	### relative positioning
 	def move_x(self, x_inp):
 		if abs(int(x_inp)) <= self.X_MAX:
-			return movement.move_x(x_inp)
+			return movement.doCommand("mX",[x_inp])
 		else:
 			raise ScrapException("x_inp is too big a move")
 
 	def move_y(self,y_inp):
 		if abs(int(y_inp)) <= self.Y_MAX:
-			return movement.move_y(y_inp)
+			return movement.doCommand("mY",[y_inp])
 		else:
 			raise ScrapException("y_inp is too big a move")
 
 
 	def move_coords(self,x_inp,y_inp):
 		if abs(int(x_inp)) <= self.X_MAX and abs(int(y_inp)) <= self.Y_MAX:
-			return movement.move_coords(x_inp,y_inp)
+			return movement.doCommand("mC",[x_inp,y_inp])
 		else:
-			raise ScrapException("y_inp is out of bounds")
+			raise ScrapException("x_inp or y_inp is too big to move")
 
 
 	def move_coords(self,coords):

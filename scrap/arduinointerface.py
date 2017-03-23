@@ -18,33 +18,16 @@ class ArduinoInterface(object):
 		self.ard_comm.daemon = True
 		self.ard_comm.start()
 
-	### reset arm position and recalibrate zero
-	def reset(self):
-		return self.ard_comm.request("R")
-
-	### absolute positioning of arm
-	def set_y(self,y_coord):
-		return self.ard_comm.request("sY|"+str(y_coord))
-
-	def set_x(self,x_coord):
-		return self.ard_comm.request("sX|"+str(x_coord))
-
-	def set_coords(self,coords):
-		return sefl.ard_comm.request("sC|{0}:{1}".format(str(coords[0]),str(coords[1])))
-
-	### relative positioning of arm
-	def move_y(self,y_diff):
-		return self.ard_comm.request("mY|"+str(y_diff))
-
-	def move_x(self,x_diff):
-		return self.ard_comm.request("mX|"+str(x_diff))
-
-	def move_coords(self,coords):
-		return sefl.ard_comm.request("mC|{0}:{1}".format(str(coords[0]),str(coords[1])))
-
-	### commands for 'accessories'
-	def lift(self):
-		pass
-
-	def drop(self):
-		pass
+	### sends commands with a possible list of values
+	def doCommand(self,command,valList=None):
+		requestCommand = command
+		if varList == None or len(varList) == 0:
+			return self.ard_comm.request(requestCommand)
+		else:
+			requestCommand += '|'
+			for val in valList:
+				requestCommand += str(val)
+				requestCommand += ':'
+			# remove last colon
+			requestCommand = requestCommand[:-1]
+			return self.ard_comm.request(requestCommand)
