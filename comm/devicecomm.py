@@ -73,12 +73,17 @@ class DeviceComm(threading.Thread):
 			# wait a little
 			time.sleep(0.01)
 		# marked for stopping
+		self.closeConnection()
 
 	# used to mark particular comm thread to stop
 	def stopThread(self):
 		self.keepRunning.set()
 
-	# function to fill out with particular behavior
+	# fill out with closing connection
+	def closeConnection(self):
+		pass
+
+	# fill out with particular behavior
 	def performCommand(self, commReq):
 		pass
 

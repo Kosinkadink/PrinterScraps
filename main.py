@@ -1,8 +1,5 @@
+from scrap.util import read_config
 
+conf_dict = read_config("conf.txt")
 
-from comm.devicecomm import CommRequest
-
-
-someCommand  = CommRequest("ayylmao")
-
-print someCommand.request
+print conf_dict

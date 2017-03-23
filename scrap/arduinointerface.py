@@ -1,9 +1,10 @@
 import os, sys, time
+import serial
 
 # add relevant dir to path
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))  # directory from which this script is ran
-main_dir = os.path.realpath(os.path.join(__location__,'../..'))
+main_dir = os.path.realpath(os.path.join(__location__,'..'))
 sys.path.insert(0, main_dir)
 
 from comm.serialcomm import SerialComm
@@ -12,9 +13,12 @@ from comm.serialcomm import SerialComm
 
 class ArduinoInterface(object):
 
-	def __init__(self, ard_comm):
-		self.ard_comm = ard_comm
+	def __init__(self, port, baud):
+		self.ard_comm = SerialComm(serial.Serial(port,int(baud)))
+		self.ard_comm.daemon = True
+		self.ard_comm.start()
 
+	### reset arm position and recalibrate zero
 	def reset(self):
 		return self.ard_comm.request("R")
 

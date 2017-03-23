@@ -7,7 +7,6 @@ from DeviceComm import DeviceComm, CommRequest, DeviceCommException
 class SerialComm(DeviceComm):
     # class for communication with devices
     # via serial communication
-    # such as: arduinos
 
     def __init__(self, comm, maxTries = 2):
         DeviceComm.__init__(self, comm)
@@ -59,6 +58,9 @@ class SerialComm(DeviceComm):
         else:
             commReq.response = response  # set response
         commReq.markDone()
+
+    def closeConnection(self):
+        self.serial.close()
 
 
 # exception for reporting SerialComm-related errors
