@@ -7,7 +7,6 @@ main_dir = os.path.realpath(os.path.join(__location__,'../..'))
 sys.path.insert(0, main_dir)
 
 from util import ScrapException
-from comm.serialcomm import SerialComm
 from arduinointerface import ArduinoInterface
 
 
