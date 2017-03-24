@@ -3,38 +3,44 @@
 
 ScrapEncoder::ScrapEncoder(int pinA, int pinB) {
 	PINA_INTERRUPT = pinA;
-	PINB = pinB;
+	PINB_CHECKER = pinB;
 	initEncoder();
 }
 
-
+// initializes encoder pins and count
 void ScrapEncoder::initEncoder() {
-	// initializes encoder pins and count
 	pinMode(PINA_INTERRUPT,INPUT);
-	pinMode(PINB,INPUT);
+	pinMode(PINB_CHECKER,INPUT);
 	resetCount();
-	attachInterrupt(digitalPinToInterrupt(PINA_INTERRUPT),checkEncoder,CHANGE);
 }
 
-
+// call to get count
 int ScrapEncoder::getCount() {
 	return encCount;
 }
 
-
+// reset encCount to 0
 void ScrapEncoder::resetCount() {
-	// reset encCount to 0
 	encCount = 0;
 }
 
-
+// for some reason one encoder does not like this
+// therefore, rest in peace. currently deprecated
 void ScrapEncoder::checkEncoder() {
-	// check encoder and increment value accordingly
-	// this is the function to attach to an interrupt
-	if (digitalRead(PINA_INTERRUPT) == digitalRead(PINB)) {
+	if (digitalRead(PINA_INTERRUPT) == digitalRead(PINB_CHECKER)) {
 		encCount++;
 	}
 	else {
 		encCount--;
 	}
+}
+
+// call to increment count
+void ScrapEncoder::incrementCount() {
+	encCount++;
+}
+
+// call to decrement count
+void ScrapEncoder::decrementCount() {
+	encCount--;
 }

@@ -4,9 +4,6 @@
 
 
 class ScrapController {
-	private:
-
-	public:
 
 };
 
@@ -14,11 +11,11 @@ class ScrapController {
 
 class ScrapMotor {
 	private:
-		const int PIN_D1;
-		const int PIN_D2;
-		const int PIN_PWM;
-		const int currPower;
-		const int currDir;
+		int PIN_D1;
+		int PIN_D2;
+		int PIN_PWM;
+		int currPower;
+		int currDir;
 		void initMotor();
 	public:
 		ScrapMotor(int PinD1, int PinD2, int PinPWM);
@@ -32,14 +29,16 @@ class ScrapMotor {
 class ScrapEncoder {
 	private:
 		volatile int encCount;
-		const int PINA_INTERRUPT;
-		const int PINB;
+		int PINA_INTERRUPT;
+		int PINB_CHECKER;
 		void initEncoder();
 	public:
-		ScrapEncoder(int PinA, int pinB);
+		ScrapEncoder(int pinA, int pinB);
 		int getCount();
-		int resetCount();
-		int checkEncoder();
+		void resetCount();
+		void incrementCount();
+		void decrementCount();
+		void checkEncoder(); //deprecated :(
 };
 
 
