@@ -13,13 +13,13 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 	attachEncoder2(enc2);
 }
 
-bool set(int g1, int g2) {
+bool ScrapDualController::set(int g1, int g2) {
 	goal1 = g1;
 	goal2 = g2;
 	return checkIfDone();
 }
 
-bool performMovement() {
+bool ScrapDualController::performMovement() {
 	//check if already done moving
 	if (checkIfDone())
 		return true;
@@ -27,33 +27,33 @@ bool performMovement() {
 
 }
 
-bool checkIfDone() {
+bool ScrapDualController::checkIfDone() {
 	return (checkIfDone1() && checkIfDone2());
 }
 
-bool checkIfDone1() {
+bool ScrapDualController::checkIfDone1() {
 	return (encoder1->getCount() - encTolerance >= goal1) && (encoder1->getCount() + encTolerance <= goal1);
 }
 
-bool checkIfDone2() {
+bool ScrapDualController::checkIfDone2() {
 	return (encoder2->getCount() - encTolerance >= goal2) && (encoder2->getCount() + encTolerance <= goal2);
 }
 
 // attach motors + encoders to be used
-ScrapDualController::attachMotor1(ScrapMotor& mot) {
+void ScrapDualController::attachMotor1(ScrapMotor& mot) {
 	motor1 = &mot;
 }
 
-ScrapDualController::attachMotor2(ScrapMotor& mot) {
+void ScrapDualController::attachMotor2(ScrapMotor& mot) {
 	motor2 = &mot;
 }
 
-ScrapDualController::attachEncoder1(ScrapEncoder& enc) {
+void ScrapDualController::attachEncoder1(ScrapEncoder& enc) {
 	encoder1 = &enc;
 }
 
 
-ScrapDualController::attachEncoder2(ScrapEncoder& enc) {
+void ScrapDualController::attachEncoder2(ScrapEncoder& enc) {
 	encoder2 = &enc;
 }
 

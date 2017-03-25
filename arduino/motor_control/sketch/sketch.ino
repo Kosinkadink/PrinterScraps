@@ -10,11 +10,24 @@
 #define ENC2PINA 19
 #define ENC2PINB 17
 
+#define MOT1_PIND1 40
+#define MOT1_PIND2 42
+#define MOT1_PINPWM 44
+
+#define MOT2_PIND1 41
+#define MOT2_PIND2 43
+#define MOT2_PINPWM 45
+
+
 // LCD DEFINITIONS
 Adafruit_SSD1306 display(-1);
 
 ScrapEncoder encoderLeft(ENC1PINA,ENC1PINB);
 ScrapEncoder encoderRight(ENC2PINA,ENC2PINA);
+ScrapMotor motorLeftY(MOT1_PIND1,MOT1_PIND2,MOT1_PINPWM);
+ScrapMotor motorRightY(MOT2_PIND1,MOT2_PIND2,MOT2_PINPWM);
+// create ScrapDualController
+ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeft,encoderRight);
 
 
 void setup() {
@@ -57,7 +70,8 @@ void encoderRightFunc() {
 void loop () {
 	delay(50);
 	// show encoder counts
-	showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
+	//showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
+	showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
 }
 
 
