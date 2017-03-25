@@ -53,11 +53,13 @@ void encoderRightFunc() {
 	}
 }
 
+
 void loop () {
 	delay(50);
 	// show encoder counts
 	showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
 }
+
 
 void showText(String text) {
   display.setTextSize(1);

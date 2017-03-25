@@ -3,10 +3,77 @@
 #include "Arduino.h"
 
 
-class ScrapController {
+class ScrapFullController {
+	private:
+		ScrapMotor* motorLeftY;
+		ScrapMotor* motorRightY;
+		ScrapMotor* motorX;
+		ScrapEncoder* encLeftY;
+		ScrapEncoder* encRightY;
+		ScrapEncoder* encX;
+	public:
+		ScrapFullController();
+
 
 };
 
+
+class ScrapController {
+	private:
+		int goal1;
+		int powerGLOBALMax = 255;
+		int powerGLOBALMin = 90;
+		int powerGLOBALInit = 200;
+		int powerMax;
+		int powerMin
+		int powerInit;
+		int encTolerance = 10;
+		ScrapMotor* motor1;
+		ScrapEncoder* encoder1;
+	public:
+		ScrapController();
+		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1);
+		bool set(g1);
+		bool performMovement();
+		bool incrementPower(int val = 1);
+		bool decrementPower(int val = 1);
+		bool getCount();
+		void attachMotor1(ScrapMotor& mot);
+		void attachEncoder1(ScrapEncoder& enc);
+
+
+};
+
+
+class ScrapDualController {
+	private:
+		int goal1;
+		int goal2;
+		int powerGLOBALMax = 255;
+		int powerGLOBALMin = 90;
+		int powerGLOBALInit = 200;
+		int powerMax;
+		int powerMin
+		int powerInit;
+		int encTolerance = 10;
+		ScrapMotor* motor1;
+		ScrapMotor* motor2;
+		ScrapEncoder* encoder1;
+		ScrapEncoder* encoder2;
+	public:
+		ScrapDualController();
+		ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2);
+		bool set(int g1,int g2); //returns state of 'done'
+		bool performMovement();
+		bool incrementPower(int val = 1);
+		bool decrementPower(int val = 1);
+		bool getCount(); //returns average of encoder counts
+		void attachMotor1(ScrapMotor& mot);
+		void attachMotor2(ScrapMotor& mot);
+		void attachEncoder1(ScrapEncoder& enc);
+		void attachEncoder2(ScrapEncoder& enc);
+
+};
 
 
 class ScrapMotor {
@@ -16,15 +83,19 @@ class ScrapMotor {
 		int PIN_PWM;
 		int currPower;
 		int currDir;
+		int powerMultiplier = 1;
 		void initMotor();
 	public:
 		ScrapMotor(int PinD1, int PinD2, int PinPWM);
+		void setMotor(int pwm);
 		void setDirection(int pwm);
+		void setDirectionMultiplier(int multi);
 		int getDirection();
 		void setPower(int pwm);
 		int getPower();
 		void stop();
 };
+
 
 class ScrapEncoder {
 	private:

@@ -17,6 +17,23 @@ void ScrapMotor::initMotor() {
 	setPower(0);
 }
 
+// set corresponding direction + power
+void ScrapMotor::setMotor(int pwm) {
+	setDirection(pwm*powerMultiplier);
+	setPower(abs(pwm));
+}
+
+// set direction multiplier (lets you flip direction)
+void ScrapMotor::setDirectionMultiplier(int multi) {
+	if (multi > 0) {
+		powerMultiplier = 1; 
+	}
+	else if (multi < 0) {
+		powerMultiplier = -1;
+	}
+	// do nothing is zero
+}
+
 // set direction based on sign of number
 void ScrapMotor::setDirection(int pwm) {
 	if (pwm > 0) {
