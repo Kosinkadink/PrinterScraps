@@ -47,44 +47,20 @@ void setup() {
 
 
 void loop () {
-	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
-
-	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
 	bool isDone = dualControl.performMovement();
 	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
 	if (isDone) {
 		setGoal = getRandom();
 		dualControl.set(setGoal,setGoal);
 	}
-	
-	//motorLeftY.setMotor(pwmChosen);
-	//motorRightY.setMotor(pwmChosen);
 	delay(5);
 	
 }
 
+
 int getRandom() {
 	return random(200,3500);
 }
-
-void loopOLD () {
-	delay(500);
-	// show encoder counts
-	//showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
-	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
-	pwmChosen = 150;
-	showText(String(pwmChosen) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
-	motorLeftY.setMotor(pwmChosen);
-	motorRightY.setMotor(pwmChosen);
-	delay(500);
-	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
-	pwmChosen = -150;
-	showText(String(pwmChosen) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
-	motorLeftY.setMotor(pwmChosen);
-	motorRightY.setMotor(pwmChosen);
-	
-}
-
 
 
 void initEncoders() {

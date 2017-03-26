@@ -59,7 +59,7 @@ bool ScrapDualController::performMovement() {
 
 }
 
-
+// calculate power to give motor
 int ScrapDualController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
 	int diffThresh = 300;
@@ -81,8 +81,6 @@ int ScrapDualController::calcPower2() {
 		return map(diff,0,diffThresh,120,powerInit);
 	}
 }
-
-
 
 void ScrapDualController::stop() {
 	motor1->stop();
@@ -123,7 +121,6 @@ void ScrapDualController::attachMotor2(ScrapMotor& mot) {
 void ScrapDualController::attachEncoder1(ScrapEncoder& enc) {
 	encoder1 = &enc;
 }
-
 
 void ScrapDualController::attachEncoder2(ScrapEncoder& enc) {
 	encoder2 = &enc;

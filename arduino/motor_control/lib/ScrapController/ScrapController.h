@@ -65,17 +65,23 @@ class ScrapController {
 		int powerMax;
 		int powerMin;
 		int powerInit;
-		int encTolerance = 10;
+		int encTolerance = 5;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 	public:
 		ScrapController();
 		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1);
 		bool set(int g1);
+		bool checkIfDone1();
+		bool checkIfDone() { return checkIfDone1(); };
+		int calcPower1();
+		int calcPower() { return calcPower1(); };
 		bool performMovement();
 		bool incrementPower(int val = 1);
 		bool decrementPower(int val = 1);
-		bool getCount();
+		void stop() { motor1->stop(); };
+		bool getCount1() { return encoder1->getCount(); };
+		bool getCount() { return getCount(); };
 		void attachMotor1(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
 
