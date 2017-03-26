@@ -1,10 +1,11 @@
 #include "ScrapController.h"
 
 
-ScrapMotor::ScrapMotor(int PinD1, int PinD2, int PinPWM) {
+ScrapMotor::ScrapMotor(int PinD1, int PinD2, int PinPWM, int dirMultip) {
 	PIN_D1 = PinD1;
 	PIN_D2 = PinD2;
 	PIN_PWM = PinPWM;
+	setDirectionMultiplier(dirMultip);
 	initMotor();
 }
 
@@ -39,12 +40,12 @@ void ScrapMotor::setDirection(int pwm) {
 	if (pwm > 0) {
 		digitalWrite(PIN_D1,HIGH);
 		digitalWrite(PIN_D2,LOW);
-		currDir = 1;
+		currDir = 1*powerMultiplier;
 	}
 	else if (pwm < 0) {
-		digitalWrite(PIN_D1,HIGH);
-		digitalWrite(PIN_D2,LOW);
-		currDir = -1;
+		digitalWrite(PIN_D1,LOW);
+		digitalWrite(PIN_D2,HIGH);
+		currDir = -1*powerMultiplier;
 	}
 	else {
 		digitalWrite(PIN_D1,LOW);
@@ -71,5 +72,5 @@ int ScrapMotor::getPower() {
 
 // stop the motor
 void ScrapMotor::stop() {
-	setDirection(0);
+	setMotor(0);
 }

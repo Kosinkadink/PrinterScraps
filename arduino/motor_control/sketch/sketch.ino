@@ -24,11 +24,14 @@ Adafruit_SSD1306 display(-1);
 
 ScrapEncoder encoderLeft(ENC1PINA,ENC1PINB);
 ScrapEncoder encoderRight(ENC2PINA,ENC2PINA);
-ScrapMotor motorLeftY(MOT1_PIND1,MOT1_PIND2,MOT1_PINPWM);
+ScrapMotor motorLeftY(MOT1_PIND1,MOT1_PIND2,MOT1_PINPWM,-1); //flip direction
 ScrapMotor motorRightY(MOT2_PIND1,MOT2_PIND2,MOT2_PINPWM);
 // create ScrapDualController
 ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeft,encoderRight);
 
+
+int pwmChosen = 150;
+int setGoal;
 
 void setup() {
 	//initialize encoders
@@ -38,12 +41,57 @@ void setup() {
 	display.display();
 	display.clearDisplay();
 	showText("PrinterScraps");
+	setGoal = getRandom();
+	dualControl.set(setGoal,setGoal);
 }
+
+
+void loop () {
+	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+
+	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+	bool isDone = dualControl.performMovement();
+	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+	if (isDone) {
+		setGoal = getRandom();
+		dualControl.set(setGoal,setGoal);
+	}
+	
+	//motorLeftY.setMotor(pwmChosen);
+	//motorRightY.setMotor(pwmChosen);
+	delay(5);
+	
+}
+
+int getRandom() {
+	return random(200,3500);
+}
+
+void loopOLD () {
+	delay(500);
+	// show encoder counts
+	//showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
+	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
+	pwmChosen = 150;
+	showText(String(pwmChosen) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+	motorLeftY.setMotor(pwmChosen);
+	motorRightY.setMotor(pwmChosen);
+	delay(500);
+	//showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
+	pwmChosen = -150;
+	showText(String(pwmChosen) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+	motorLeftY.setMotor(pwmChosen);
+	motorRightY.setMotor(pwmChosen);
+	
+}
+
+
 
 void initEncoders() {
 	attachInterrupt(digitalPinToInterrupt(ENC1PINA),encoderLeftFunc,CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ENC2PINA),encoderRightFunc,CHANGE);
 }
+
 
 void encoderLeftFunc() {
 	//encoderLeft.checkEncoder();
@@ -64,14 +112,6 @@ void encoderRightFunc() {
 	else {
 		encoderRight.decrementCount();
 	}
-}
-
-
-void loop () {
-	delay(50);
-	// show encoder counts
-	//showText(String(encoderLeft.getCount())+'\n'+String(encoderRight.getCount()));
-	showText(String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(dualControl.getCount()));
 }
 
 
