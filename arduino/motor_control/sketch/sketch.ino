@@ -106,10 +106,10 @@ void encoderRightYFunc() {
 void encoderAxisXFunc() {
 	//encoderAxisX.checkEncoder();
 	if (digitalRead(ENC3PINA) == digitalRead(ENC3PINB)) {
-		encoderAxisX.incrementCount();
+		encoderAxisX.decrementCount();
 	}
 	else {
-		encoderAxisX.decrementCount();
+		encoderAxisX.incrementCount();
 	}
 }
 
