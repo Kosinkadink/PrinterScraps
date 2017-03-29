@@ -28,10 +28,19 @@ void ScrapEncoder::resetCount() {
 // therefore, rest in peace. currently deprecated
 void ScrapEncoder::checkEncoder() {
 	if (digitalRead(PINA_INTERRUPT) == digitalRead(PINB_CHECKER)) {
-		encCount++;
+		incrementCount();
 	}
 	else {
-		encCount--;
+		decrementCount();
+	}
+}
+
+void ScrapEncoder::checkEncoderFlipped() {
+	if (digitalRead(PINA_INTERRUPT) == digitalRead(PINB_CHECKER)) {
+		decrementCount();
+	}
+	else {
+		incrementCount();
 	}
 }
 

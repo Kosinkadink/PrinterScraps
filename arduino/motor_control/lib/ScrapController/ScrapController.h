@@ -38,7 +38,8 @@ class ScrapEncoder {
 		void resetCount();
 		void incrementCount();
 		void decrementCount();
-		void checkEncoder(); //deprecated :(
+		void checkEncoder();
+		void checkEncoderFlipped();
 };
 
 class ScrapFullController {
@@ -80,8 +81,8 @@ class ScrapController {
 		bool incrementPower(int val = 1);
 		bool decrementPower(int val = 1);
 		void stop() { motor1->stop(); };
-		bool getCount1() { return encoder1->getCount(); };
-		bool getCount() { return getCount(); };
+		int getCount1() { return encoder1->getCount(); };
+		int getCount() { return getCount(); };
 		void attachMotor1(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
 

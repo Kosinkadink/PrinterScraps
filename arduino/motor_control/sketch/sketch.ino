@@ -9,6 +9,8 @@
 #define ENC1PINB 16
 #define ENC2PINA 19
 #define ENC2PINB 17
+#define ENC3PINA 2
+#define ENC3PINB 4
 
 #define MOT1_PIND1 40
 #define MOT1_PIND2 42
@@ -18,17 +20,24 @@
 #define MOT2_PIND2 43
 #define MOT2_PINPWM 45
 
+#define MOT3_PIND1 50
+#define MOT3_PIND2 48
+#define MOT3_PINPWM 46
+
 
 // LCD DEFINITIONS
 Adafruit_SSD1306 display(-1);
 
-ScrapEncoder encoderLeft(ENC1PINA,ENC1PINB);
-ScrapEncoder encoderRight(ENC2PINA,ENC2PINA);
+ScrapEncoder encoderLeftY(ENC1PINA,ENC1PINB);
+ScrapEncoder encoderRightY(ENC2PINA,ENC2PINB);
+ScrapEncoder encoderAxisX(ENC3PINA,ENC3PINB);
 ScrapMotor motorLeftY(MOT1_PIND1,MOT1_PIND2,MOT1_PINPWM,-1); //flip direction
 ScrapMotor motorRightY(MOT2_PIND1,MOT2_PIND2,MOT2_PINPWM);
+ScrapMotor motorAxisX(MOT3_PIND1,MOT3_PIND2,MOT3_PINPWM);
 // create ScrapDualController
-ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeft,encoderRight);
-
+ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRightY);
+// create ScrapController
+ScrapController uniControl(motorAxisX,encoderAxisX);
 
 int pwmChosen = 150;
 int setGoal;
@@ -43,12 +52,14 @@ void setup() {
 	showText("PrinterScraps");
 	setGoal = getRandom();
 	dualControl.set(setGoal,setGoal);
+	uniControl.set(setGoal);
 }
 
 
 void loop () {
+	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(uniControl.getCount1()));
 	bool isDone = dualControl.performMovement();
-	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2()));
+	bool isDone2 = uniControl.performMovement();
 	if (isDone) {
 		setGoal = getRandom();
 		dualControl.set(setGoal,setGoal);
@@ -64,29 +75,41 @@ int getRandom() {
 
 
 void initEncoders() {
-	attachInterrupt(digitalPinToInterrupt(ENC1PINA),encoderLeftFunc,CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ENC2PINA),encoderRightFunc,CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ENC1PINA),encoderLeftYFunc,CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ENC2PINA),encoderRightYFunc,CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ENC3PINA),encoderAxisXFunc,CHANGE);
 }
 
 
-void encoderLeftFunc() {
-	//encoderLeft.checkEncoder();
+void encoderLeftYFunc() {
+	//encoderLeftY.checkEncoderFlipped();
 	if (digitalRead(ENC1PINA) == digitalRead(ENC1PINB)) {
-		encoderLeft.decrementCount();
+		encoderLeftY.decrementCount();
 	}
 	else {
-		encoderLeft.incrementCount();
+		encoderLeftY.incrementCount();
 	}
 }
 
 
-void encoderRightFunc() {
-	//encoderRight.checkEncoder();
+void encoderRightYFunc() {
+	//encoderRightY.checkEncoder();
 	if (digitalRead(ENC2PINA) == digitalRead(ENC2PINB)) {
-		encoderRight.incrementCount();
+		encoderRightY.incrementCount();
 	}
 	else {
-		encoderRight.decrementCount();
+		encoderRightY.decrementCount();
+	}
+}
+
+
+void encoderAxisXFunc() {
+	//encoderAxisX.checkEncoder();
+	if (digitalRead(ENC3PINA) == digitalRead(ENC3PINB)) {
+		encoderAxisX.incrementCount();
+	}
+	else {
+		encoderAxisX.decrementCount();
 	}
 }
 
