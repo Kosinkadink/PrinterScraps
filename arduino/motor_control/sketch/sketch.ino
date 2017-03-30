@@ -123,7 +123,9 @@ String interpretCommand() {
 	String responseString = "n";  // string to be sent to main program
 	String returnString = "";     // string received from a subfunction
 
-	// determine what to do
+	// determine what to do:
+	
+	// check if movement command
 	if (command == "s") {
 		responseString = "1";
 		returnString = performSet(values[0].toInt(),values[1].toInt());
@@ -131,6 +133,14 @@ String interpretCommand() {
 	else if (command == "sp") {
 		responseString = "1";
 		returnString = performSetPassive(values[0].toInt(),values[1].toInt());
+	}
+	// check if mode-setting command
+	// TODO: add functionality to STREAMOUT
+	else if (command == "SYNCOUT") {
+		responseString = "1";
+	}
+	else if (command == "STREAMOUT") {
+		responseString = "1";
 	}
 
 	responseString += returnString;
