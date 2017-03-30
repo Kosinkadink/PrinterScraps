@@ -1,3 +1,4 @@
+import time
 from scrap.util import read_config, wait_till_done, ScrapException
 from comm.serialcomm import SerialComm
 from scrap.scrapinterface import ScrapInterface
@@ -12,15 +13,20 @@ scrap = ScrapInterface(conf_dict)
 
 while True:
 	user_inp = raw_input("> ")
-	if user_inp.lower().startswith("EXIT"):
+	if user_inp.lower().startswith("exit"):
 		break
 	else:
 		try:
-			x,y = user_inp.strip().split(",")
-			wait_till_done(scrap.set_coords(x,y))
+			coords = user_inp.strip().split(",")
+			if len(coords) < 2:
+				raise ValueError("use a comma to seperate coords")
+			wait_till_done(scrap.set_coords(coords,passive=True))
 		except ValueError,e:
 			print str(e)
 		except ScrapException,e:
 			print str(e)
 		else:
 			print 'done!'
+
+scrap.stop()
+time.sleep(0.25)

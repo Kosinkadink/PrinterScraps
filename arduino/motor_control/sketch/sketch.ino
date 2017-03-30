@@ -61,6 +61,9 @@ void setup() {
 	setGoal = 0;//getRandom();
 	uniControl.set(setGoal);
 	dualControl.set(setGoal,setGoal);
+	// start serial and signal to main program that we are connected
+	Serial.begin(115200);
+	Serial.write(1);
 }
 
 
@@ -105,10 +108,14 @@ void loop () {
 		// empty out command and value strings
 		command = "";
 		for (int i = 0; i < maxValues; i++) {
-			values[i] = ""
+			values[i] = "";
 		}
 	}
-	//small delay
+	// show statuses
+	showText(String(uniControl.getGoal())+','+String(dualControl.getGoal1()) 
+	+'\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())
+	+'\n'+String(uniControl.getCount1()));
+	// small delay
 	delay(5);
 }
 
@@ -119,11 +126,11 @@ String interpretCommand() {
 	// determine what to do
 	if (command == "s") {
 		responseString = "1";
-		returnString = performSet(value[0].toInt(),value[1].toInt());
+		returnString = performSet(values[0].toInt(),values[1].toInt());
 	}
 	else if (command == "sp") {
 		responseString = "1";
-		returnString = performSetPassive(value[0].toInt(),value[1].toInt());
+		returnString = performSetPassive(values[0].toInt(),values[1].toInt());
 	}
 
 	responseString += returnString;
@@ -132,8 +139,8 @@ String interpretCommand() {
 
 // set x and y coordinates
 String performSet(const int& x_coord, const int& y_coord) {
-	uniControl.setGoal(x_coord);
-	dualControl.setGoal(y_coord,y_coord);
+	uniControl.set(x_coord);
+	dualControl.set(y_coord,y_coord);
 	while (!performActions()) {
 		delay(5);
 	}
@@ -142,8 +149,8 @@ String performSet(const int& x_coord, const int& y_coord) {
 
 // set x and y, but do not wait for completion
 String performSetPassive(const int& x_coord, const int& y_coord) {
-	uniControl.setGoal(x_coord);
-	dualControl.setGoal(y_coord,y_coord);
+	uniControl.set(x_coord);
+	dualControl.set(y_coord,y_coord);
 	return "1";
 }
 

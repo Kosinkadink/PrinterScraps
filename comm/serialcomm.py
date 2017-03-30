@@ -1,3 +1,4 @@
+import time
 from devicecomm import DeviceComm, CommRequest, DeviceCommException
 
 # formatting:
@@ -24,10 +25,10 @@ class SerialComm(DeviceComm):
         # set current mode
         self.setMode(mode)
 
-    def setMode(mode):
+    def setMode(self,mode):
         # check if mode exists
         newFunc = self.MODES[mode]
-        if modeNum == None:
+        if newFunc == None:
             raise SerialCommException("mode %s is not recognized" % mode)
         self.request(mode)
         self.currentMode = mode

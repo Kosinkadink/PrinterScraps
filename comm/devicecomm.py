@@ -58,14 +58,10 @@ class DeviceComm(threading.Thread):
 		while (not self.keepRunning.is_set()):
 			self.commandLock.acquire()
 			if len(self.commandList) > 0:  # check if commands to perform
-				print("found command in commandList")
 				# do the item in queue
 				commandObj = self.commandList[0]
 				self.commandLock.release()
-				print(commandObj)
 				self.performCommand(commandObj)
-				print("done performing that command - now command object: ")
-				print(commandObj)
 				# now remove the command from queue
 				self.commandLock.acquire()
 				self.removeCommand(commandObj)

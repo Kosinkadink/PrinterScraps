@@ -73,6 +73,8 @@ class ScrapController {
 		ScrapController();
 		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1);
 		bool set(int g1);
+		int getGoal1() { return goal1; };
+		int getGoal() { return getGoal1(); };
 		bool checkIfDone1();
 		bool checkIfDone() { return checkIfDone1(); };
 		int calcPower1();
@@ -109,6 +111,8 @@ class ScrapDualController {
 		ScrapDualController();
 		ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2);
 		bool set(int g1,int g2); //returns state of 'done'
+		int getGoal1() { return goal1; };
+		int getGoal2() { return goal2; };
 		bool checkIfDone();
 		bool checkIfDone1();
 		bool checkIfDone2();

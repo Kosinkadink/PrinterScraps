@@ -21,13 +21,17 @@ class ArduinoInterface(object):
 	### sends commands with a possible list of values
 	def doCommand(self,command,valList=None):
 		requestCommand = command
-		if varList == None or len(varList) == 0:
+		if valList == None or len(valList) == 0:
 			return self.ard_comm.request(requestCommand)
 		else:
 			requestCommand += '|'
 			for val in valList:
 				requestCommand += str(val)
-				requestCommand += ':'
-			# remove last colon
+				requestCommand += '|'
+			# remove last separator
 			requestCommand = requestCommand[:-1]
+			print requestCommand
 			return self.ard_comm.request(requestCommand)
+	
+	def stop(self):
+		self.ard_comm.stopThread()
