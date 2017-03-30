@@ -39,8 +39,15 @@ ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRight
 // create ScrapController
 ScrapController uniControl(motorAxisX,encoderAxisX);
 
-int pwmChosen = 150;
+// used for setting goal;
 int setGoal;
+
+// input parsing
+const int maxValues = 2;
+String command; // general command
+String values[maxValues]; // stores values for command
+String response; // response returned to main program
+
 
 void setup() {
 	//initialize encoders
@@ -50,36 +57,127 @@ void setup() {
 	display.display();
 	display.clearDisplay();
 	showText("PrinterScraps");
-	setGoal = getRandom();
-	dualControl.set(setGoal,setGoal);
+
+	setGoal = 0;//getRandom();
 	uniControl.set(setGoal);
+	dualControl.set(setGoal,setGoal);
 }
 
 
 void loop () {
+	// perform movement - moves arm to some goal coordinate
+	performActions();
+
+	// if something in serial, parse it
+	if(Serial.available()){
+
+		int addTo = 0; // 0 for command, 1 for value
+
+		while (Serial.available() > 0)
+		{
+			char readIn = (char)Serial.read();
+			if (readIn == '\n') {
+				break;
+			}
+			else if (readIn == '|') {
+				addTo += 1;
+				continue;
+			}
+			// add to command if no | reached yet
+			if (addTo == 0) {
+				command += readIn;
+			}
+			// add to proper value in array
+			else if (addTo <= maxValues) {
+				values[addTo-1] += readIn;
+			}
+			// if values exceed max, then stop listening to prevent problems
+			else {
+				break;
+			}
+		}
+		//clear anything remaining in serial
+		while (Serial.available() > 0) {
+			Serial.read();
+		}
+		response = interpretCommand();
+		Serial.println(response); //sends response with \n at the end
+		// empty out command and value strings
+		command = "";
+		for (int i = 0; i < maxValues; i++) {
+			values[i] = ""
+		}
+	}
+	//small delay
+	delay(5);
+}
+
+String interpretCommand() {
+	String responseString = "n";  // string to be sent to main program
+	String returnString = "";     // string received from a subfunction
+
+	// determine what to do
+	if (command == "s") {
+		responseString = "1";
+		returnString = performSet(value[0].toInt(),value[1].toInt());
+	}
+	else if (command == "sp") {
+		responseString = "1";
+		returnString = performSetPassive(value[0].toInt(),value[1].toInt());
+	}
+
+	responseString += returnString;
+	return responseString;
+}
+
+// set x and y coordinates
+String performSet(const int& x_coord, const int& y_coord) {
+	uniControl.setGoal(x_coord);
+	dualControl.setGoal(y_coord,y_coord);
+	while (!performActions()) {
+		delay(5);
+	}
+	return "1";
+}
+
+// set x and y, but do not wait for completion
+String performSetPassive(const int& x_coord, const int& y_coord) {
+	uniControl.setGoal(x_coord);
+	dualControl.setGoal(y_coord,y_coord);
+	return "1";
+}
+
+
+// perform all necessary movement to reach goal
+bool performActions() {
+	bool isDone1 = uniControl.performMovement();
+	bool isDone2 = dualControl.performMovement();
+	return isDone1 && isDone2;
+}
+
+// used for testing in general
+void performRandom() {
 	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(uniControl.getCount1()));
-	bool isDone = dualControl.performMovement();
-	bool isDone2 = uniControl.performMovement();
-	if (isDone) {
+	bool isDone1 = uniControl.performMovement();
+	bool isDone2 = dualControl.performMovement();
+	if (isDone1 && isDone2) {
 		setGoal = getRandom();
 		dualControl.set(setGoal,setGoal);
 	}
 	delay(5);
-	
 }
 
-
+// generate random number to set as goal
 int getRandom() {
 	return random(200,3500);
 }
 
-
+// initialize encoders
 void initEncoders() {
 	attachInterrupt(digitalPinToInterrupt(ENC1PINA),encoderLeftYFunc,CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ENC2PINA),encoderRightYFunc,CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ENC3PINA),encoderAxisXFunc,CHANGE);
 }
-
 
 void encoderLeftYFunc() {
 	//encoderLeftY.checkEncoderFlipped();
@@ -91,7 +189,6 @@ void encoderLeftYFunc() {
 	}
 }
 
-
 void encoderRightYFunc() {
 	//encoderRightY.checkEncoder();
 	if (digitalRead(ENC2PINA) == digitalRead(ENC2PINB)) {
@@ -101,7 +198,6 @@ void encoderRightYFunc() {
 		encoderRightY.decrementCount();
 	}
 }
-
 
 void encoderAxisXFunc() {
 	//encoderAxisX.checkEncoder();
@@ -113,12 +209,12 @@ void encoderAxisXFunc() {
 	}
 }
 
-
+// display text on OLED display
 void showText(String text) {
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0,0);
-  display.println(text);
-  display.display();
-  display.clearDisplay();
+	display.setTextSize(1);
+	display.setTextColor(WHITE);
+	display.setCursor(0,0);
+	display.println(text);
+	display.display();
+	display.clearDisplay();
 }

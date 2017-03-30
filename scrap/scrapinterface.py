@@ -41,7 +41,7 @@ class ScrapInterface(object):
 
 	def set_coords(self,x_inp,y_inp):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0 and int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:
-			return movement.doCommand("sC",[x_inp,y_inp])
+			return movement.doCommand("s",[x_inp,y_inp])
 		else:
 			raise ScrapException("x_inp or y_inp is out of bounds")
 
@@ -66,7 +66,7 @@ class ScrapInterface(object):
 
 	def move_coords(self,x_inp,y_inp):
 		if abs(int(x_inp)) <= self.X_MAX and abs(int(y_inp)) <= self.Y_MAX:
-			return movement.doCommand("mC",[x_inp,y_inp])
+			return movement.doCommand("m",[x_inp,y_inp])
 		else:
 			raise ScrapException("x_inp or y_inp is too big to move")
 
