@@ -65,8 +65,8 @@ class ScrapController {
 		int powerMin;
 		int powerInit;
 		int encTolerance = 5;
-		int slowdownThresh = 300;
-		int minSlowPower = 100;
+		int slowdownThresh = 250;
+		int minSlowPower = 105;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 	public:
@@ -99,8 +99,10 @@ class ScrapDualController {
 		int powerGLOBALInit = 255;
 		int powerMax;
 		int powerMin;
-		int powerInit;
-		int encTolerance = 5;
+		int powerInit1;
+		int powerInit2;
+		int diffTolerance = 50; //max diff in encoder values
+		int encTolerance = 5; // max window of error from set goal
 		int slowdownThresh = 300;
 		int minSlowPower1 = 190;
 		int minSlowPower2 = 180;
@@ -122,6 +124,9 @@ class ScrapDualController {
 		bool performMovement();
 		bool incrementPower(int val = 1);
 		bool decrementPower(int val = 1);
+		void movePowerToward1(int val = 1);
+		void movePowerToward2(int val = 1);
+		void balancePower();
 		void stop();
 		int getCount1() { return encoder1->getCount(); };
 		int getCount2() { return encoder2->getCount(); };

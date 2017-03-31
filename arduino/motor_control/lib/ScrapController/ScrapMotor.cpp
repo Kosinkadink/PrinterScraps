@@ -59,8 +59,9 @@ int ScrapMotor::getDirection() {
 	return currDir;
 }
 
-// set power (PWM)
+// set power (PWM) - make sure is in valid range
 void ScrapMotor::setPower(int pwm) {
+	pwm = max(0,min(255,pwm));
 	analogWrite(PIN_PWM,pwm);
 	currPower = pwm;
 }

@@ -5,13 +5,15 @@
 ScrapDualController::ScrapDualController() {
 	powerMax = powerGLOBALMax;
 	powerMin = powerGLOBALMin;
-	powerInit = powerGLOBALInit;
+	powerInit1 = powerGLOBALInit;
+	powerInit2 = powerGLOBALInit;
 }
 
 ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2) {
 	powerMax = powerGLOBALMax;
 	powerMin = powerGLOBALMin;
-	powerInit = powerGLOBALInit;
+	powerInit1 = powerGLOBALInit;
+	powerInit2 = powerGLOBALInit;
 	attachMotor1(mot1);
 	attachMotor2(mot2);
 	attachEncoder1(enc1);
@@ -54,6 +56,8 @@ bool ScrapDualController::performMovement() {
 			motor2->setMotor(-calcPower2());
 		}
 	}
+	// based on separation, balance power of each motor
+	balancePower();
 	
 	return false;
 
@@ -63,20 +67,20 @@ bool ScrapDualController::performMovement() {
 int ScrapDualController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
 	if (diff > slowdownThresh) {
-		return powerInit;
+		return powerInit1;
 	}
 	else {
-		return map(diff,0,slowdownThresh,minSlowPower1,powerInit);
+		return map(diff,0,slowdownThresh,minSlowPower1,powerInit1);
 	}
 }
 
 int ScrapDualController::calcPower2() {
 	int diff = abs(encoder2->getCount() - goal2);
 	if (diff > slowdownThresh) {
-		return powerInit;
+		return powerInit2;
 	}
 	else {
-		return map(diff,0,slowdownThresh,minSlowPower2,powerInit);
+		return map(diff,0,slowdownThresh,minSlowPower2,powerInit2);
 	}
 }
 
@@ -85,13 +89,40 @@ void ScrapDualController::stop() {
 	motor2->stop();
 }
 
-// increment or decrement target power
+// increment or decrement target power TODO
 bool ScrapDualController::incrementPower(int val) {
 	return false;
 }
 
 bool ScrapDualController::decrementPower(int val) {
 	return false;
+}
+
+// redistribute power, based on direction of movement and enc difference
+void ScrapDualController::balancePower() {
+	// if 1 too far ahead, balance power towards 2
+	if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() >= diffTolerance) {
+		movePowerToward2();
+	}
+	// if 2 too far ahead, balance power towards 1
+	else if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() <= -diffTolerance) {
+		movePowerToward1();
+	}
+	// otherwise, resume normal behavior
+	else {
+		powerInit1 = powerGLOBALInit;
+		powerInit2 = powerGLOBALInit;
+	}
+}
+
+void ScrapDualController::movePowerToward1(int val) {
+	powerInit1 = min(255,motor1->getPower()+val);
+	powerInit2 = max(minSlowPower2,motor2->getPower()-val);
+}
+
+void ScrapDualController::movePowerToward2(int val) {
+	powerInit1 = max(minSlowPower1,motor1->getPower()-val);
+	powerInit2 = min(255,motor2->getPower()+val);
 }
 
 // check if encoder count is within tolerance of goal
