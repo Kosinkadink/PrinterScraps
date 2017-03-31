@@ -52,8 +52,6 @@ class ScrapFullController {
 		ScrapEncoder* encX;
 	public:
 		ScrapFullController();
-
-
 };
 
 
@@ -67,6 +65,8 @@ class ScrapController {
 		int powerMin;
 		int powerInit;
 		int encTolerance = 5;
+		int slowdownThresh = 300;
+		int minSlowPower = 100;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 	public:
@@ -87,8 +87,6 @@ class ScrapController {
 		int getCount() { return getCount(); };
 		void attachMotor1(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
-
-
 };
 
 
@@ -97,12 +95,15 @@ class ScrapDualController {
 		int goal1;
 		int goal2;
 		int powerGLOBALMax = 255;
-		int powerGLOBALMin = 90;
-		int powerGLOBALInit = 200;
+		int powerGLOBALMin = 170;
+		int powerGLOBALInit = 255;
 		int powerMax;
 		int powerMin;
 		int powerInit;
 		int encTolerance = 5;
+		int slowdownThresh = 300;
+		int minSlowPower1 = 190;
+		int minSlowPower2 = 180;
 		ScrapMotor* motor1;
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
@@ -129,7 +130,6 @@ class ScrapDualController {
 		void attachMotor2(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
 		void attachEncoder2(ScrapEncoder& enc);
-
 };
 
 

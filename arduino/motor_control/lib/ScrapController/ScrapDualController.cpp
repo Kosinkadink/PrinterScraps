@@ -62,23 +62,21 @@ bool ScrapDualController::performMovement() {
 // calculate power to give motor
 int ScrapDualController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
-	int diffThresh = 300;
-	if (diff > diffThresh) {
+	if (diff > slowdownThresh) {
 		return powerInit;
 	}
 	else {
-		return map(diff,0,diffThresh,120,powerInit);
+		return map(diff,0,slowdownThresh,minSlowPower1,powerInit);
 	}
 }
 
 int ScrapDualController::calcPower2() {
 	int diff = abs(encoder2->getCount() - goal2);
-	int diffThresh = 300;
-	if (diff > diffThresh) {
+	if (diff > slowdownThresh) {
 		return powerInit;
 	}
 	else {
-		return map(diff,0,diffThresh,120,powerInit);
+		return map(diff,0,slowdownThresh,minSlowPower2,powerInit);
 	}
 }
 

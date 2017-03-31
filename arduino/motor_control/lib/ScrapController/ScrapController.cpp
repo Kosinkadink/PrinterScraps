@@ -45,12 +45,11 @@ bool ScrapController::performMovement() {
 // calculate power to give motor
 int ScrapController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
-	int diffThresh = 300;
-	if (diff > diffThresh) {
+	if (diff > slowdownThresh) {
 		return powerInit;
 	}
 	else {
-		return map(diff,0,diffThresh,120,powerInit);
+		return map(diff,0,slowdownThresh,minSlowPower,powerInit);
 	}
 }
 
