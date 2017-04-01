@@ -54,7 +54,7 @@ class ScrapController {
 		int powerInit;
 		int encTolerance = 5;
 		int slowdownThresh = 250;
-		int minSlowPower = 105;
+		int minSlowPower = 120;
 		int minDecrementPower = 130;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
@@ -94,7 +94,7 @@ class ScrapDualController {
 		int encTolerance = 5; // max window of error from set goal
 		int slowdownThresh = 300;
 		int minSlowPower1 = 190;
-		int minSlowPower2 = 180;
+		int minSlowPower2 = 175;
 		ScrapMotor* motor1;
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
@@ -133,7 +133,7 @@ class ScrapFullController {
 	private:
 		ScrapController* xControl;
 		ScrapDualController* yControl;
-		float diffDecim = 0.05;
+		float diffDecim = 0.02;
 		float desiredProportion; // x_goal/y_goal proportion
 	public:
 		ScrapFullController();

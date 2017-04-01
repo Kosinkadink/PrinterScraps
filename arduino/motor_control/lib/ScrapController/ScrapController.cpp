@@ -19,6 +19,7 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 
 bool ScrapController::set(int g1) {
 	goal1 = g1;
+	powerInit = powerGLOBALInit;
 	return checkIfDone();
 }
 
@@ -59,7 +60,7 @@ void ScrapController::incrementPower(int val) {
 }
 // decrement, but with a different slow power than for calcPower
 void ScrapController::decrementPower(int val) {
-	powerInit = max(minDecrementPower,motor1->getPower()-val);
+	powerInit = max(minSlowPower,motor1->getPower()-val);
 }
 
 // check if encoder count is within tolerance of goal

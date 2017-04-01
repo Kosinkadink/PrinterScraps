@@ -52,6 +52,10 @@ void ScrapFullController::balancePower() {
 	else if (currentProportion < desiredProportion*(1.0-diffDecim)) {
 		movePowerTowardY();
 	}
+	else {
+		xControl->incrementPower();
+		yControl->incrementPower();
+	}
 }
 
 // calculate current proportion

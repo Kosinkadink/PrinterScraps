@@ -180,7 +180,7 @@ void performRandom() {
 	bool isDone = fullControl.performMovement();
 	if (isDone) {
 		setGoal = getRandom();
-		fullControl.set(setGoal);
+		fullControl.set(setGoal,setGoal);
 	}
 	delay(5);
 }

@@ -24,6 +24,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 bool ScrapDualController::set(int g1, int g2) {
 	goal1 = g1;
 	goal2 = g2;
+	powerInit1 = powerGLOBALInit;
+	powerInit2 = powerGLOBALInit;
 	return checkIfDone();
 }
 
