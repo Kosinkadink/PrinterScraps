@@ -27,6 +27,10 @@ bool ScrapDualController::set(int g1, int g2) {
 	return checkIfDone();
 }
 
+bool ScrapDualController::set(int goal_both) {
+	return set(goal_both,goal_both);
+}
+
 bool ScrapDualController::performMovement() {
 	//check if already done moving
 	if (checkIfDone()) { 
@@ -90,12 +94,14 @@ void ScrapDualController::stop() {
 }
 
 // increment or decrement target power TODO
-bool ScrapDualController::incrementPower(int val) {
-	return false;
+void ScrapDualController::incrementPower(int val) {
+	powerInit1 = min(255,motor1->getPower()+val);
+	powerInit2 = min(255,motor2->getPower()+val);
 }
 
-bool ScrapDualController::decrementPower(int val) {
-	return false;
+void ScrapDualController::decrementPower(int val) {
+	powerInit1 = max(minSlowPower1,motor1->getPower()-val);
+	powerInit2 = max(minSlowPower2,motor2->getPower()-val);
 }
 
 // redistribute power, based on direction of movement and enc difference

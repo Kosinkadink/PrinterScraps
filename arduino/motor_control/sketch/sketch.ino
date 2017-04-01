@@ -38,6 +38,8 @@ ScrapMotor motorAxisX(MOT3_PIND1,MOT3_PIND2,MOT3_PINPWM);
 ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRightY);
 // create ScrapController
 ScrapController uniControl(motorAxisX,encoderAxisX);
+// finall create ScrapFullController
+ScrapFullController fullControl(uniControl,dualControl);
 
 // used for setting goal;
 int setGoal;
@@ -59,8 +61,11 @@ void setup() {
 	showText("PrinterScraps");
 
 	setGoal = 0;//getRandom();
-	uniControl.set(setGoal);
-	dualControl.set(setGoal,setGoal);
+	showText("setting goals");
+	fullControl.set(setGoal,setGoal);
+	showText("ready!");
+	//uniControl.set(setGoal);
+	//dualControl.set(setGoal);
 	// start serial and signal to main program that we are connected
 	Serial.begin(115200);
 	Serial.write(1);
@@ -149,8 +154,9 @@ String interpretCommand() {
 
 // set x and y coordinates
 String performSet(const int& x_coord, const int& y_coord) {
-	uniControl.set(x_coord);
-	dualControl.set(y_coord,y_coord);
+	fullControl.set(x_coord,y_coord);
+	//uniControl.set(x_coord);
+	//dualControl.set(y_coord);
 	while (!performActions()) {
 		delay(5);
 	}
@@ -159,17 +165,18 @@ String performSet(const int& x_coord, const int& y_coord) {
 
 // set x and y, but do not wait for completion
 String performSetPassive(const int& x_coord, const int& y_coord) {
-	uniControl.set(x_coord);
-	dualControl.set(y_coord,y_coord);
+	fullControl.set(x_coord,y_coord);
+	//uniControl.set(x_coord);
+	//dualControl.set(y_coord);
 	return "1";
 }
 
-
 // perform all necessary movement to reach goal
 bool performActions() {
-	bool isDone1 = uniControl.performMovement();
-	bool isDone2 = dualControl.performMovement();
-	return isDone1 && isDone2;
+	return fullControl.performMovement();
+	//bool isDone1 = uniControl.performMovement();
+	//bool isDone2 = dualControl.performMovement();
+	//return isDone1 && isDone2;
 }
 
 // used for testing in general
