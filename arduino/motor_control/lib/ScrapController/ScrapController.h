@@ -55,6 +55,7 @@ class ScrapController {
 		int encTolerance = 5;
 		int slowdownThresh = 250;
 		int minSlowPower = 105;
+		int minDecrementPower = 130;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 	public:

@@ -45,6 +45,8 @@ class ScrapInterface(object):
 	
 	def set_coords_indiv(self,x_inp,y_inp,passive=False):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0 and int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:
+			x_inp = '%4d' % int(x_inp)
+			y_inp = '%4d' % int(y_inp)
 			if not passive:
 				return self.movement.doCommand("s",[x_inp,y_inp])
 			else:

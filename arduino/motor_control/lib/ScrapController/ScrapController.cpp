@@ -57,9 +57,9 @@ int ScrapController::calcPower1() {
 void ScrapController::incrementPower(int val) {
 	powerInit = min(255,motor1->getPower()+val);
 }
-
+// decrement, but with a different slow power than for calcPower
 void ScrapController::decrementPower(int val) {
-	powerInit = max(minSlowPower,motor1->getPower()-val);
+	powerInit = max(minDecrementPower,motor1->getPower()-val);
 }
 
 // check if encoder count is within tolerance of goal

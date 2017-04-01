@@ -64,8 +64,6 @@ void setup() {
 	showText("setting goals");
 	fullControl.set(setGoal,setGoal);
 	showText("ready!");
-	//uniControl.set(setGoal);
-	//dualControl.set(setGoal);
 	// start serial and signal to main program that we are connected
 	Serial.begin(115200);
 	Serial.write(1);
@@ -130,12 +128,16 @@ String interpretCommand() {
 
 	// determine what to do:
 	
-	// check if movement command
+	// check if movement command - make sure length is okay
 	if (command == "s") {
+		if (values[0].length() != 4 || values[1].length() != 4)
+			return responseString;
 		responseString = "1";
 		returnString = performSet(values[0].toInt(),values[1].toInt());
 	}
 	else if (command == "sp") {
+		if (values[0].length() != 4 || values[1].length() != 4)
+			return responseString;
 		responseString = "1";
 		returnString = performSetPassive(values[0].toInt(),values[1].toInt());
 	}
@@ -155,8 +157,6 @@ String interpretCommand() {
 // set x and y coordinates
 String performSet(const int& x_coord, const int& y_coord) {
 	fullControl.set(x_coord,y_coord);
-	//uniControl.set(x_coord);
-	//dualControl.set(y_coord);
 	while (!performActions()) {
 		delay(5);
 	}
@@ -166,27 +166,21 @@ String performSet(const int& x_coord, const int& y_coord) {
 // set x and y, but do not wait for completion
 String performSetPassive(const int& x_coord, const int& y_coord) {
 	fullControl.set(x_coord,y_coord);
-	//uniControl.set(x_coord);
-	//dualControl.set(y_coord);
 	return "1";
 }
 
 // perform all necessary movement to reach goal
 bool performActions() {
 	return fullControl.performMovement();
-	//bool isDone1 = uniControl.performMovement();
-	//bool isDone2 = dualControl.performMovement();
-	//return isDone1 && isDone2;
 }
 
 // used for testing in general
 void performRandom() {
 	showText(String(setGoal) + '\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())+'\n'+String(uniControl.getCount1()));
-	bool isDone1 = uniControl.performMovement();
-	bool isDone2 = dualControl.performMovement();
-	if (isDone1 && isDone2) {
+	bool isDone = fullControl.performMovement();
+	if (isDone) {
 		setGoal = getRandom();
-		dualControl.set(setGoal,setGoal);
+		fullControl.set(setGoal);
 	}
 	delay(5);
 }
