@@ -41,6 +41,9 @@ ScrapController uniControl(motorAxisX,encoderAxisX);
 // finall create ScrapFullController
 ScrapFullController fullControl(uniControl,dualControl);
 
+
+// delay time
+const int delayTime = 2;
 // used for setting goal;
 int setGoal;
 
@@ -119,7 +122,7 @@ void loop () {
 	+'\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())
 	+'\n'+String(uniControl.getCount1()));
 	// small delay
-	delay(5);
+	delay(delayTime);
 }
 
 String interpretCommand() {
@@ -158,7 +161,7 @@ String interpretCommand() {
 String performSet(const int& x_coord, const int& y_coord) {
 	fullControl.set(x_coord,y_coord);
 	while (!performActions()) {
-		delay(5);
+		delay(delayTime);
 	}
 	return "1";
 }
@@ -182,7 +185,7 @@ void performRandom() {
 		setGoal = getRandom();
 		fullControl.set(setGoal,setGoal);
 	}
-	delay(5);
+	delay(delayTime);
 }
 
 // generate random number to set as goal

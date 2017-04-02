@@ -19,6 +19,13 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 
 bool ScrapController::set(int g1) {
 	goal1 = g1;
+	// set a smaller slowdown thresh if this is a small movement
+	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
+		slowdownThresh = shortSlowdownThresh;
+	}
+	else {
+		slowdownThresh = slowdownGLOBALThresh;
+	}
 	powerInit = powerGLOBALInit;
 	return checkIfDone();
 }

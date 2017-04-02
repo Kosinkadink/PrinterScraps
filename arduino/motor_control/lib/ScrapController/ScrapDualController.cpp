@@ -24,6 +24,13 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 bool ScrapDualController::set(int g1, int g2) {
 	goal1 = g1;
 	goal2 = g2;
+	// set a smaller slowdown thresh if this is a small movement
+	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
+		slowdownThresh = shortSlowdownThresh;
+	}
+	else {
+		slowdownThresh = slowdownGLOBALThresh;
+	}
 	powerInit1 = powerGLOBALInit;
 	powerInit2 = powerGLOBALInit;
 	return checkIfDone();
