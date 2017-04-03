@@ -46,12 +46,13 @@ class ScrapEncoder {
 class ScrapSwitch {
 	private:
 		int PIN_SWITCH;
-		bool openHigh = true;
+		bool highWhenOpen = true;
 		void initSwitch() { pinMode(PIN_SWITCH,INPUT); };
 	public:
 		ScrapSwitch(int pinSwitch) { PIN_SWITCH=pinSwitch; initSwitch(); };
+		void setOpenHigh(bool openHigh) { highWhenOpen = openHigh; };
 		bool getIfPressed() {
-			if (openHigh) 
+			if (highWhenOpen) 
 				return (digitalRead(PIN_SWITCH)==LOW);
 			else
 				return (digitalRead(PIN_SWITCH)==HIGH);
@@ -62,18 +63,14 @@ class ScrapSwitch {
 class ScrapController {
 	private:
 		int goal1;
-		int powerGLOBALMax = 255;
-		int powerGLOBALMin = 90;
-		int powerGLOBALInit = 200;
-		int slowdownGLOBALThresh = 250;
-		int powerMax;
-		int powerMin;
+		int powerGLOBALInit = 200; // default starting speed
+		int slowdownGLOBALThresh = 250; // default slowdown enc diff
 		int powerInit;
-		int encTolerance = 5;
-		int slowdownThresh = 250;
-		int shortSlowdownThresh = 50;
-		int minSlowPower = 120;
-		int minDecrementPower = 130;
+		int encTolerance = 5; // +/- range around goal
+		int slowdownThresh = 250; // slow down range
+		int shortSlowdownThresh = 50; // used for short distances
+		int minSlowPower = 120; // minimum power
+		int minDecrementPower = 130; // minimum power of decrementPower
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 		ScrapSwitch* switch1;
@@ -105,20 +102,16 @@ class ScrapDualController {
 	private:
 		int goal1;
 		int goal2;
-		int powerGLOBALMax = 255;
-		int powerGLOBALMin = 170;
-		int powerGLOBALInit = 255;
-		int slowdownGLOBALThresh = 300;
-		int powerMax;
-		int powerMin;
+		int powerGLOBALInit = 255; // default starting speed
+		int slowdownGLOBALThresh = 300; // default slowdown enc diff
 		int powerInit1;
 		int powerInit2;
 		int diffTolerance = 25; //max diff in encoder values
 		int encTolerance = 5; // max window of error from set goal
-		int slowdownThresh = 300;
-		int shortSlowdownThresh = 75;
-		int minSlowPower1 = 190;
-		int minSlowPower2 = 175;
+		int slowdownThresh = 300; // slow down range
+		int shortSlowdownThresh = 75; // used for short distances
+		int minSlowPower1 = 190; // minimum power of motor1
+		int minSlowPower2 = 175; // minimum power of motor2
 		ScrapMotor* motor1;
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
@@ -163,7 +156,7 @@ class ScrapFullController {
 	private:
 		ScrapController* xControl;
 		ScrapDualController* yControl;
-		float diffDecim = 0.02;
+		float diffDecim = 0.02; // percentage diff from desired proportion
 		float desiredProportion; // x_goal/y_goal proportion
 	public:
 		ScrapFullController();

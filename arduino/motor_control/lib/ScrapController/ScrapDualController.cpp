@@ -3,15 +3,11 @@
 //ScrapDualController::
 
 ScrapDualController::ScrapDualController() {
-	powerMax = powerGLOBALMax;
-	powerMin = powerGLOBALMin;
 	powerInit1 = powerGLOBALInit;
 	powerInit2 = powerGLOBALInit;
 }
 
 ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2) {
-	powerMax = powerGLOBALMax;
-	powerMin = powerGLOBALMin;
 	powerInit1 = powerGLOBALInit;
 	powerInit2 = powerGLOBALInit;
 	attachMotor1(mot1);
