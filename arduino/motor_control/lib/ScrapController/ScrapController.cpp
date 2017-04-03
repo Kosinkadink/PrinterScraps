@@ -17,6 +17,25 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 	stop();
 }
 
+ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwitch& swi1) {
+	ScrapController(mot1,enc1);
+	attachSwitch1(swi1);
+}
+
+// move back until switches are activated
+bool ScrapController::performReset() {
+	// check if switch is pressed
+	if (switch1->getIfPressed()) {
+		motor1->stop();
+		encoder1->resetCount();
+		return true;
+	}
+	else {
+		motor1->setMotor(-150);
+		return false;
+	}
+}
+
 bool ScrapController::set(int g1) {
 	goal1 = g1;
 	// set a smaller slowdown thresh if this is a small movement

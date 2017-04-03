@@ -43,6 +43,22 @@ class ScrapEncoder {
 };
 
 
+class ScrapSwitch {
+	private:
+		int PIN_SWITCH;
+		bool openHigh = true;
+		void initSwitch() { pinMode(PIN_SWITCH,INPUT); };
+	public:
+		ScrapSwitch(int pinSwitch) { PIN_SWITCH=pinSwitch; initSwitch(); };
+		bool getIfPressed() {
+			if (openHigh) 
+				return (digitalRead(PIN_SWITCH)==LOW);
+			else
+				return (digitalRead(PIN_SWITCH)==HIGH);
+		};
+};
+
+
 class ScrapController {
 	private:
 		int goal1;
@@ -60,9 +76,11 @@ class ScrapController {
 		int minDecrementPower = 130;
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
+		ScrapSwitch* switch1;
 	public:
 		ScrapController();
 		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1);
+		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwitch& swi1);
 		bool set(int g1);
 		int getGoal1() { return goal1; };
 		int getGoal() { return getGoal1(); };
@@ -71,6 +89,7 @@ class ScrapController {
 		int calcPower1();
 		int calcPower() { return calcPower1(); };
 		bool performMovement();
+		bool performReset();
 		void incrementPower(int val = 1);
 		void decrementPower(int val = 1);
 		void stop() { motor1->stop(); };
@@ -78,6 +97,7 @@ class ScrapController {
 		int getCount() { return getCount1(); };
 		void attachMotor1(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
+		void attachSwitch1(ScrapSwitch& swi) { switch1 = &swi; };
 };
 
 
@@ -103,9 +123,12 @@ class ScrapDualController {
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
 		ScrapEncoder* encoder2;
+		ScrapSwitch* switch1;
+		ScrapSwitch* switch2;
 	public:
 		ScrapDualController();
 		ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2);
+		ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2, ScrapSwitch& swi1, ScrapSwitch& swi2);
 		bool set(int g1,int g2); //returns state of 'done'
 		bool set(int goal_both); //returns state of 'done'
 		int getGoal1() { return goal1; };
@@ -117,6 +140,7 @@ class ScrapDualController {
 		int calcPower1();
 		int calcPower2();
 		bool performMovement();
+		bool performReset();
 		void incrementPower(int val = 1);
 		void decrementPower(int val = 1);
 		void movePowerToward1(int val = 1);
@@ -130,6 +154,8 @@ class ScrapDualController {
 		void attachMotor2(ScrapMotor& mot);
 		void attachEncoder1(ScrapEncoder& enc);
 		void attachEncoder2(ScrapEncoder& enc);
+		void attachSwitch1(ScrapSwitch& swi) { switch1 = &swi; };
+		void attachSwitch2(ScrapSwitch& swi) { switch2 = &swi; };
 };
 
 
@@ -151,6 +177,7 @@ class ScrapFullController {
 		bool checkIfDoneY() { return yControl->checkIfDone(); };
 		bool checkIfDone() { return checkIfDoneX() && checkIfDoneY(); };
 		bool performMovement();
+		bool performReset();
 		float getMovementProportion(); 
 		void balancePower();
 		void movePowerTowardX(int val = 1);

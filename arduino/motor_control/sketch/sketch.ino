@@ -24,6 +24,10 @@
 #define MOT3_PIND2 48
 #define MOT3_PINPWM 46
 
+#define SWITCH_PIN1 22
+#define SWITCH_PIN2 24
+#define SWITCH_PIN3 26
+
 
 // LCD DEFINITIONS
 Adafruit_SSD1306 display(-1);
@@ -34,10 +38,13 @@ ScrapEncoder encoderAxisX(ENC3PINA,ENC3PINB);
 ScrapMotor motorLeftY(MOT1_PIND1,MOT1_PIND2,MOT1_PINPWM,-1); //flip direction
 ScrapMotor motorRightY(MOT2_PIND1,MOT2_PIND2,MOT2_PINPWM);
 ScrapMotor motorAxisX(MOT3_PIND1,MOT3_PIND2,MOT3_PINPWM);
+ScrapSwitch switchLeftY(SWITCH_PIN1);
+ScrapSwitch switchRightY(SWITCH_PIN2);
+ScrapSwitch switchX(SWITCH_PIN3);
 // create ScrapDualController
-ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRightY);
+ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRightY,switchLeftY,switchRightY);
 // create ScrapController
-ScrapController uniControl(motorAxisX,encoderAxisX);
+ScrapController uniControl(motorAxisX,encoderAxisX,switchX);
 // finall create ScrapFullController
 ScrapFullController fullControl(uniControl,dualControl);
 
@@ -62,8 +69,11 @@ void setup() {
 	display.display();
 	display.clearDisplay();
 	showText("PrinterScraps");
-
-	setGoal = 0;//getRandom();
+	// reset arm
+	showText("resetting arm");
+	performReset();
+	// set initial goal
+	setGoal = 0;
 	showText("setting goals");
 	fullControl.set(setGoal,setGoal);
 	showText("ready!");
@@ -171,6 +181,15 @@ String performSetPassive(const int& x_coord, const int& y_coord) {
 	fullControl.set(x_coord,y_coord);
 	return "1";
 }
+
+
+String performReset() {
+	while (!fullControl.performReset()) {
+		delay(delayTime);
+	}
+	return "1";
+}
+
 
 // perform all necessary movement to reach goal
 bool performActions() {
