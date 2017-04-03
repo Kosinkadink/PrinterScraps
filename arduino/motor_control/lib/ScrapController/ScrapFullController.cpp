@@ -14,7 +14,9 @@ ScrapFullController::ScrapFullController(ScrapController& xCont, ScrapDualContro
 // move back until switches are activated
 bool ScrapFullController::performReset() {
 	// check if each controller is done resetting
-	if (xControl->performReset() && yControl->performReset()) {
+	bool xReset = xControl->performReset();
+	bool yReset = yControl->performReset();
+	if (xReset && yReset) {
 		return true;
 	}
 	else {

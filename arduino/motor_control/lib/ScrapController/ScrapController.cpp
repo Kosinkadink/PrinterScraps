@@ -14,8 +14,11 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 }
 
 ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwitch& swi1) {
-	ScrapController(mot1,enc1);
+	powerInit = powerGLOBALInit;
+	attachMotor1(mot1);
+	attachEncoder1(enc1);
 	attachSwitch1(swi1);
+	stop();
 }
 
 // move back until switches are activated
@@ -27,7 +30,7 @@ bool ScrapController::performReset() {
 		return true;
 	}
 	else {
-		motor1->setMotor(-150);
+		motor1->setMotor(-140);
 		return false;
 	}
 }

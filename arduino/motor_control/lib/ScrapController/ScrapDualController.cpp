@@ -18,9 +18,15 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 }
 
 ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2, ScrapSwitch& swi1, ScrapSwitch& swi2) {
-	ScrapDualController(mot1,mot2,enc1,enc2);
+	powerInit1 = powerGLOBALInit;
+	powerInit2 = powerGLOBALInit;
+	attachMotor1(mot1);
+	attachMotor2(mot2);
+	attachEncoder1(enc1);
+	attachEncoder2(enc2);
 	attachSwitch1(swi1);
 	attachSwitch2(swi2);
+	stop();
 }
 
 // move back until switches are activated
@@ -38,13 +44,13 @@ bool ScrapDualController::performReset() {
 			motor1->stop();
 		}
 		else {
-			motor1->setMotor(-150);
+			motor1->setMotor(-210);
 		}
 		if (switch2->getIfPressed()) {
 			motor2->stop();
 		}
 		else {
-			motor2->setMotor(-150);
+			motor2->setMotor(-210);
 		}
 		return false;
 	}
