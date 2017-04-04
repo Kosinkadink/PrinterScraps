@@ -40,11 +40,11 @@ ScrapMotor motorRightY(MOT2_PIND1,MOT2_PIND2,MOT2_PINPWM);
 ScrapMotor motorAxisX(MOT3_PIND1,MOT3_PIND2,MOT3_PINPWM);
 ScrapSwitch switchLeftY(SWITCH_PIN1);
 ScrapSwitch switchRightY(SWITCH_PIN2);
-ScrapSwitch switchX(SWITCH_PIN3);
+ScrapSwitch switchAxisX(SWITCH_PIN3);
 // create ScrapDualController
 ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRightY,switchLeftY,switchRightY);
 // create ScrapController
-ScrapController uniControl(motorAxisX,encoderAxisX,switchX);
+ScrapController uniControl(motorAxisX,encoderAxisX,switchAxisX);
 // finall create ScrapFullController
 ScrapFullController fullControl(uniControl,dualControl);
 
