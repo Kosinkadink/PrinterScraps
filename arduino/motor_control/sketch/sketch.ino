@@ -188,6 +188,8 @@ String performSetPassive(const int& x_coord, const int& y_coord) {
 
 
 String performReset() {
+	// move goal to 0,0 to forget previous goal
+	fullControl.set(0,0);
 	while (!fullControl.performReset()) {
 		delay(delayTime);
 	}

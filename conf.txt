@@ -1,4 +1,4 @@
 move_ard_port = /dev/ttyACM0
 move_ard_baud = 115200
-X_MAX = 3600
-Y_MAX = 3600
+X_MAX = 3300
+Y_MAX = 3300

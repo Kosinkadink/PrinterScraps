@@ -30,7 +30,7 @@ bool ScrapController::performReset() {
 		return true;
 	}
 	else {
-		motor1->setMotor(-140);
+		motor1->setMotor(-130);
 		return false;
 	}
 }
