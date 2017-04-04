@@ -44,13 +44,13 @@ bool ScrapDualController::performReset() {
 			motor1->stop();
 		}
 		else {
-			motor1->setMotor(-210);
+			motor1->setMotor(-225);
 		}
 		if (switch2->getIfPressed()) {
 			motor2->stop();
 		}
 		else {
-			motor2->setMotor(-210);
+			motor2->setMotor(-225);
 		}
 		return false;
 	}

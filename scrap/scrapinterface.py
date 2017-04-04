@@ -21,7 +21,7 @@ class ScrapInterface(object):
 
 	### reset arm position and recalibrate zero
 	def reset(self):
-		return self.movement.doCommand("R")
+		return self.movement.doCommand("r")
 
 
 	### absolute positioning

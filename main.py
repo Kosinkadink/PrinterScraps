@@ -17,14 +17,20 @@ while True:
 		break
 	else:
 		try:
-			comm,coords = user_inp.strip().split()
-			coords = coords.strip().split(",")
-			if len(coords) < 2:
-				raise ValueError("use a comma to seperate coords")
-			if comm == 's':
-				wait_till_done(scrap.set_coords(coords))
-			elif comm == 'sp':
-				wait_till_done(scrap.set_coords(coords,passive=True))
+			doneYet = False
+			inp = user_inp.strip()
+			if inp.lower() == 'r':
+				wait_till_done(scrap.reset())
+				doneYet = True
+			if not doneYet:	
+				comm,coords = inp.split()
+				coords = coords.strip().split(",")
+				if len(coords) < 2:
+					raise ValueError("use a comma to seperate coords")
+				if comm == 's':
+					wait_till_done(scrap.set_coords(coords))
+				elif comm == 'sp':
+					wait_till_done(scrap.set_coords(coords,passive=True))
 		except ValueError,e:
 			print str(e)
 		except ScrapException,e:

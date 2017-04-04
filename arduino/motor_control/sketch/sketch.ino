@@ -154,6 +154,10 @@ String interpretCommand() {
 		responseString = "1";
 		returnString = performSetPassive(values[0].toInt(),values[1].toInt());
 	}
+	else if (command == "r") {
+		responseString = "1";
+		returnString = performReset();
+	}
 	// check if mode-setting command
 	// TODO: add functionality to STREAMOUT
 	else if (command == "SYNCOUT") {
