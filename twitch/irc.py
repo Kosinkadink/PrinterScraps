@@ -22,7 +22,7 @@ class IRC:
 			return False
 		# if no data received, connection was lost!
 		if not data:
-			self.connect(self)
+			self.connect()
 			return None
 		# check if has message
 		if self.checkForMessage(data):

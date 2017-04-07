@@ -45,21 +45,34 @@ while True:
 	for parse_inp in parse_inputs:
 		try:
 			doneYet = False
+			isFromTwitch = False
+			# determine if twitch message
 			if isinstance(parse_inp,dict):
 				parse_inp = parse_inp['message']
+				isFromTwitch = True
 			inp = parse_inp.strip()
+			# do this if NOT from twitch
 			if inp.lower() == 'r':
 				wait_till_done(scrap.reset())
 				doneYet = True
+			
 			if not doneYet:	
 				comm,coords = inp.split()
 				coords = coords.strip().split(",")
 				if len(coords) < 2:
 					raise ValueError("use a comma to seperate coords")
-				if comm == 's':
-					wait_till_done(scrap.set_coords(coords))
-				elif comm == 'sp':
-					wait_till_done(scrap.set_coords(coords,passive=True))
+				# do this if NOT from twitch
+				if not isFromTwitch:
+					if comm == 's':
+						wait_till_done(scrap.set_coords(coords))
+					elif comm == 'sp':
+						wait_till_done(scrap.set_coords(coords,passive=True))
+				# do this if from twitch
+				else:
+					if comm == 's':
+						wait_till_done(scrap.set_coords(coords,passive=True))
+					elif comm == 'r':
+						wait_till_done(scrap.reset())
 		except ValueError,e:
 			print str(e)
 		except ScrapException,e:
