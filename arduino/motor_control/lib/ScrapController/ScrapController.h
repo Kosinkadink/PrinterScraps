@@ -29,6 +29,7 @@ class ScrapMotor {
 class ScrapEncoder {
 	private:
 		volatile int encCount;
+		int oldEncCount;
 		int PINA_INTERRUPT;
 		int PINB_CHECKER;
 		void initEncoder();
@@ -36,6 +37,8 @@ class ScrapEncoder {
 		ScrapEncoder(int pinA, int pinB);
 		int getCount();
 		void resetCount();
+		int getOldCount();
+		void setOldCount(int count);
 		void incrementCount();
 		void decrementCount();
 		void checkEncoder();
@@ -89,6 +92,7 @@ class ScrapController {
 		bool performReset();
 		void incrementPower(int val = 1);
 		void decrementPower(int val = 1);
+		void resumePower();
 		void stop() { motor1->stop(); };
 		int getCount1() { return encoder1->getCount(); };
 		int getCount() { return getCount1(); };
@@ -108,7 +112,8 @@ class ScrapDualController {
 		int powerInit2;
 		int diffTolerance = 25; //max diff in encoder values
 		int encTolerance = 5; // max window of error from set goal
-		int slowdownThresh = 300; // slow down range
+		int slowdownThresh1 = slowdownGLOBALThresh; // slow down range
+		int slowdownThresh2 = slowdownGLOBALThresh; // slow down range
 		int shortSlowdownThresh = 75; // used for short distances
 		int minSlowPower1 = 190; // minimum power of motor1
 		int minSlowPower2 = 175; // minimum power of motor2
@@ -136,6 +141,7 @@ class ScrapDualController {
 		bool performReset();
 		void incrementPower(int val = 1);
 		void decrementPower(int val = 1);
+		void resumePower();
 		void movePowerToward1(int val = 1);
 		void movePowerToward2(int val = 1);
 		void balancePower();
@@ -156,7 +162,7 @@ class ScrapFullController {
 	private:
 		ScrapController* xControl;
 		ScrapDualController* yControl;
-		float diffDecim = 0.02; // percentage diff from desired proportion
+		float diffDecim = 0.01; // percentage diff from desired proportion
 		float desiredProportion; // x_goal/y_goal proportion
 	public:
 		ScrapFullController();

@@ -58,14 +58,16 @@ void ScrapFullController::balancePower() {
 	// get current proportion
 	float currentProportion = getMovementProportion();
 	// if current proportion is greater, then move power to Y
-	if (currentProportion > desiredProportion*(1.0+diffDecim)) {
+	if (currentProportion*(1.0+diffDecim) > desiredProportion) {
 		movePowerTowardX();
 	}
 	// else, move power to X
-	else if (currentProportion < desiredProportion*(1.0-diffDecim)) {
+	else if (currentProportion*(1.0-diffDecim) < desiredProportion) {
 		movePowerTowardY();
 	}
 	else {
+		//xControl->resumePower();
+		//yControl->resumePower();
 		xControl->incrementPower();
 		yControl->incrementPower();
 	}
@@ -96,6 +98,7 @@ void ScrapFullController::movePowerTowardY(int val) {
 	xControl->decrementPower(val);
 	yControl->incrementPower(val);
 }
+
 
 // attach controllers
 void ScrapFullController::attachControllerX(ScrapController& xCont) {

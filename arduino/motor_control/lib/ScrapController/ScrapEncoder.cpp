@@ -22,6 +22,15 @@ int ScrapEncoder::getCount() {
 // reset encCount to 0
 void ScrapEncoder::resetCount() {
 	encCount = 0;
+	oldEncCount = 0;
+}
+
+int ScrapEncoder::getOldCount() {
+	return oldEncCount;
+}
+
+void ScrapEncoder::setOldCount(int count) {
+	oldEncCount = count;
 }
 
 // for some reason one encoder does not like this

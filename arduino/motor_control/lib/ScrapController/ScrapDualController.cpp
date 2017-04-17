@@ -61,10 +61,16 @@ bool ScrapDualController::set(int g1, int g2) {
 	goal2 = g2;
 	// set a smaller slowdown thresh if this is a small movement
 	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
-		slowdownThresh = shortSlowdownThresh;
+		slowdownThresh1 = shortSlowdownThresh;
 	}
 	else {
-		slowdownThresh = slowdownGLOBALThresh;
+		slowdownThresh1 = slowdownGLOBALThresh;
+	}
+	if (abs(goal2-encoder2->getCount()) <= slowdownGLOBALThresh) {
+		slowdownThresh2 = shortSlowdownThresh;
+	}
+	else {
+		slowdownThresh2 = slowdownGLOBALThresh;
 	}
 	powerInit1 = powerGLOBALInit;
 	powerInit2 = powerGLOBALInit;
@@ -114,21 +120,21 @@ bool ScrapDualController::performMovement() {
 // calculate power to give motor
 int ScrapDualController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
-	if (diff > slowdownThresh) {
+	if (diff > slowdownThresh1) {
 		return powerInit1;
 	}
 	else {
-		return map(diff,0,slowdownThresh,minSlowPower1,powerInit1);
+		return map(diff,0,slowdownThresh1,minSlowPower1,powerInit1);
 	}
 }
 
 int ScrapDualController::calcPower2() {
 	int diff = abs(encoder2->getCount() - goal2);
-	if (diff > slowdownThresh) {
+	if (diff > slowdownThresh2) {
 		return powerInit2;
 	}
 	else {
-		return map(diff,0,slowdownThresh,minSlowPower2,powerInit2);
+		return map(diff,0,slowdownThresh2,minSlowPower2,powerInit2);
 	}
 }
 
@@ -137,7 +143,7 @@ void ScrapDualController::stop() {
 	motor2->stop();
 }
 
-// increment or decrement target power TODO
+// increment or decrement target power
 void ScrapDualController::incrementPower(int val) {
 	powerInit1 = min(255,motor1->getPower()+val);
 	powerInit2 = min(255,motor2->getPower()+val);
@@ -146,6 +152,11 @@ void ScrapDualController::incrementPower(int val) {
 void ScrapDualController::decrementPower(int val) {
 	powerInit1 = max(minSlowPower1,motor1->getPower()-val);
 	powerInit2 = max(minSlowPower2,motor2->getPower()-val);
+}
+// set to powerInit
+void ScrapDualController::resumePower() {
+	//powerInit1 = powerGLOBALInit;
+	//powerInit2 = powerGLOBALInit;
 }
 
 // redistribute power, based on direction of movement and enc difference
