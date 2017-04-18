@@ -1,0 +1,1 @@
+SUBSYSTEM=="tty", ATTRS{serial}=="556323139383513131E0", SYMLINK+="arduino_maincontrol"

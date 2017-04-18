@@ -1,0 +1,3 @@
+#! /bin/bash
+cp ./99-scrap-names.rules /etc/udev/rules.d/
+udevadm control --reload
