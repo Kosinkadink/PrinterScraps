@@ -20,7 +20,7 @@ void ScrapMotor::initMotor() {
 
 // set corresponding direction + power
 void ScrapMotor::setMotor(int pwm) {
-	setDirection(pwm*powerMultiplier);
+	setDirection(pwm);
 	setPower(abs(pwm));
 }
 
@@ -37,15 +37,16 @@ void ScrapMotor::setDirectionMultiplier(int multi) {
 
 // set direction based on sign of number
 void ScrapMotor::setDirection(int pwm) {
+	pwm *= powerMultiplier;
 	if (pwm > 0) {
 		digitalWrite(PIN_D1,HIGH);
 		digitalWrite(PIN_D2,LOW);
-		currDir = 1*powerMultiplier;
+		currDir = 1;
 	}
 	else if (pwm < 0) {
 		digitalWrite(PIN_D1,LOW);
 		digitalWrite(PIN_D2,HIGH);
-		currDir = -1*powerMultiplier;
+		currDir = -1;
 	}
 	else {
 		digitalWrite(PIN_D1,LOW);

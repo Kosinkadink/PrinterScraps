@@ -10,6 +10,7 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 	powerInit = powerGLOBALInit;
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
+	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	stop();
 }
 
@@ -17,20 +18,25 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwit
 	powerInit = powerGLOBALInit;
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
+	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	attachSwitch1(swi1);
 	stop();
 }
 
 // move back until switches are activated
 bool ScrapController::performReset() {
+	speedControl1.setSpeed(0);
+	motor1->setDirection(-1);
 	// check if switch is pressed
 	if (switch1->getIfPressed()) {
-		motor1->stop();
+		speedControl1.setSpeed(0);
 		encoder1->resetCount();
+		speedControl1.performMovement();
 		return true;
 	}
 	else {
-		motor1->setMotor(-130);
+		speedControl1.setSpeed(0.0007);
+		speedControl1.performMovement();
 		return false;
 	}
 }

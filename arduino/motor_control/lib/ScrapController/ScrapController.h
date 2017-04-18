@@ -29,7 +29,6 @@ class ScrapMotor {
 class ScrapEncoder {
 	private:
 		volatile int encCount;
-		int oldEncCount;
 		int PINA_INTERRUPT;
 		int PINB_CHECKER;
 		void initEncoder();
@@ -37,12 +36,35 @@ class ScrapEncoder {
 		ScrapEncoder(int pinA, int pinB);
 		int getCount();
 		void resetCount();
-		int getOldCount();
-		void setOldCount(int count);
 		void incrementCount();
 		void decrementCount();
 		void checkEncoder();
 		void checkEncoderFlipped();
+};
+
+
+class ScrapMotorControl {
+	private:
+		unsigned long prevTime = 0;
+		float prevSpeed = 0.0;
+		float speedGoal = 0.0;
+		int prevCount = 0;
+		ScrapMotor* motor;
+		ScrapEncoder* encoder;
+		float calcSpeed(); // calculates speed and updates relevant vals
+	public:
+		ScrapMotorControl();
+		ScrapMotorControl(ScrapMotor& mot, ScrapEncoder& enc);
+		void setSpeed(float newSpeed);
+		void reset();
+		int getCount() { return encoder->getCount(); };
+		float getSpeed(); // returns speed
+		unsigned long getTime();
+		void performMovement();
+		void attachMotor(ScrapMotor& mot) { motor = &mot; };
+		void attachEncoder(ScrapEncoder& enc) { encoder = &enc; };
+	
+	
 };
 
 
@@ -70,13 +92,14 @@ class ScrapController {
 		int slowdownGLOBALThresh = 250; // default slowdown enc diff
 		int powerInit;
 		int encTolerance = 5; // +/- range around goal
-		int slowdownThresh = 250; // slow down range
+		int slowdownThresh = 200; // slow down range
 		int shortSlowdownThresh = 50; // used for short distances
 		int minSlowPower = 120; // minimum power
 		int minDecrementPower = 130; // minimum power of decrementPower
 		ScrapMotor* motor1;
 		ScrapEncoder* encoder1;
 		ScrapSwitch* switch1;
+		ScrapMotorControl speedControl1;
 	public:
 		ScrapController();
 		ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1);
@@ -115,14 +138,16 @@ class ScrapDualController {
 		int slowdownThresh1 = slowdownGLOBALThresh; // slow down range
 		int slowdownThresh2 = slowdownGLOBALThresh; // slow down range
 		int shortSlowdownThresh = 75; // used for short distances
-		int minSlowPower1 = 190; // minimum power of motor1
-		int minSlowPower2 = 175; // minimum power of motor2
+		int minSlowPower1 = 197; // minimum power of motor1
+		int minSlowPower2 = 180; // minimum power of motor2
 		ScrapMotor* motor1;
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
 		ScrapEncoder* encoder2;
 		ScrapSwitch* switch1;
 		ScrapSwitch* switch2;
+		ScrapMotorControl speedControl1;
+		ScrapMotorControl speedControl2;
 	public:
 		ScrapDualController();
 		ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, ScrapEncoder& enc1, ScrapEncoder& enc2);

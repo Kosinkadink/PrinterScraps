@@ -14,6 +14,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 	attachMotor2(mot2);
 	attachEncoder1(enc1);
 	attachEncoder2(enc2);
+	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
+	speedControl2 = ScrapMotorControl(*motor2,*encoder2);
 	stop();
 }
 
@@ -24,6 +26,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 	attachMotor2(mot2);
 	attachEncoder1(enc1);
 	attachEncoder2(enc2);
+	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
+	speedControl2 = ScrapMotorControl(*motor2,*encoder2);
 	attachSwitch1(swi1);
 	attachSwitch2(swi2);
 	stop();
@@ -31,27 +35,37 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 
 // move back until switches are activated
 bool ScrapDualController::performReset() {
+	speedControl1.setSpeed(0);
+	speedControl2.setSpeed(0);
+	motor1->setDirection(-1);
+	motor2->setDirection(-1);
 	// check if both switches are pressed
 	if (switch1->getIfPressed() && switch2->getIfPressed()) {
-		motor1->stop();
-		motor2->stop();
+		speedControl1.setSpeed(0);
+		speedControl2.setSpeed(0);
 		encoder1->resetCount();
 		encoder2->resetCount();
+		speedControl1.performMovement();
+		speedControl2.performMovement();
 		return true;
 	}
 	else {
 		if (switch1->getIfPressed()) {
-			motor1->stop();
+			speedControl1.setSpeed(0);
 		}
 		else {
-			motor1->setMotor(-225);
+			//motor1->setMotor(-225);
+			speedControl1.setSpeed(0.0007);
 		}
 		if (switch2->getIfPressed()) {
-			motor2->stop();
+			speedControl2.setSpeed(0);
 		}
 		else {
-			motor2->setMotor(-225);
+			//motor2->setMotor(-225);
+			speedControl2.setSpeed(0.0007);
 		}
+		speedControl1.performMovement();
+		speedControl2.performMovement();
 		return false;
 	}
 }
