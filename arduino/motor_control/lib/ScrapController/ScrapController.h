@@ -3,6 +3,7 @@
 #include "Arduino.h"
 
 
+// classes
 class ScrapMotor {
 	private:
 		int PIN_D1;
@@ -18,8 +19,8 @@ class ScrapMotor {
 		void setDirection(int pwm);
 		void setDirectionMultiplier(int multi);
 		void setPower(int pwm);
-		void incrementPower() { setPower(currDir+1); };
-		void decrementPower() { setPower(currDir-1); };
+		void incrementPower(int val = 1) { setPower(currDir+val); };
+		void decrementPower(int val = 1) { setPower(currDir-val); };
 		int getDirection();
 		int getPower();
 		void stop();
@@ -55,16 +56,19 @@ class ScrapMotorControl {
 	public:
 		ScrapMotorControl();
 		ScrapMotorControl(ScrapMotor& mot, ScrapEncoder& enc);
-		void setSpeed(float newSpeed);
+		void setControl(float newSpeed); // set direction + speed
+		void setSpeed(float newSpeed); // set direction only
+		float mapFloat(float x, float in_min, float in_max, float out_min, float out_max);
+		float constrainFloat(float x, float min, float max);
+		float convertToSpeed(int encPerSec);
 		void reset();
 		int getCount() { return encoder->getCount(); };
 		float getSpeed(); // returns speed
+		float getSpeedGoal() { return speedGoal; }; // return speed goal
 		unsigned long getTime();
 		void performMovement();
 		void attachMotor(ScrapMotor& mot) { motor = &mot; };
 		void attachEncoder(ScrapEncoder& enc) { encoder = &enc; };
-	
-	
 };
 
 
@@ -107,16 +111,20 @@ class ScrapController {
 		bool set(int g1);
 		int getGoal1() { return goal1; };
 		int getGoal() { return getGoal1(); };
+		int getDiff1();
 		bool checkIfDone1();
 		bool checkIfDone() { return checkIfDone1(); };
 		int calcPower1();
 		int calcPower() { return calcPower1(); };
+		float calcSpeed1();
+		float calcSpeed() { return calcSpeed1(); };
 		bool performMovement();
+		bool performMovementSpeed();
 		bool performReset();
 		void incrementPower(int val = 1);
 		void decrementPower(int val = 1);
 		void resumePower();
-		void stop() { motor1->stop(); };
+		void stop();
 		int getCount1() { return encoder1->getCount(); };
 		int getCount() { return getCount1(); };
 		void attachMotor1(ScrapMotor& mot);

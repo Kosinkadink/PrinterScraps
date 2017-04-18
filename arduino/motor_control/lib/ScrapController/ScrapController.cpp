@@ -54,6 +54,11 @@ bool ScrapController::set(int g1) {
 	return checkIfDone();
 }
 
+void ScrapController::stop() {
+	speedControl1.setSpeed(0);
+	speedControl1.performMovement();
+}
+
 bool ScrapController::performMovement() {
 	//check if already done moving
 	if (checkIfDone()) { 
@@ -71,18 +76,51 @@ bool ScrapController::performMovement() {
 	}
 	
 	return false;
-
 }
+
+bool ScrapController::performMovementSpeed() {
+	if (checkIfDone()) { 
+		stop();
+		return true;
+	}
+	//else, gotta do stuff
+	else {
+		if (encoder1->getCount() < goal1) {
+			speedControl1.setControl(calcSpeed1());
+		}
+		else {
+			speedControl1.setControl(-calcSpeed1());
+		}
+	}
+	speedControl1.performMovement();
+	return false;
+}
+
+// calculate speed to give motor
+float ScrapController::calcSpeed1() {
+	int diff = getDiff1();
+	if (diff > slowdownThresh) {
+		return speedControl1.getSpeedGoal();
+	}
+	else {
+		return speedControl1.convertToSpeed(map(diff,1,slowdownThresh,encTolerance,slowdownThresh));
+	}
+}
+
 
 // calculate power to give motor
 int ScrapController::calcPower1() {
-	int diff = abs(encoder1->getCount() - goal1);
+	int diff = getDiff1();
 	if (diff > slowdownThresh) {
 		return powerInit;
 	}
 	else {
 		return map(diff,0,slowdownThresh,minSlowPower,powerInit);
 	}
+}
+
+int ScrapController::getDiff1() {
+	return abs(encoder1->getCount() - goal1);
 }
 
 // increment or decrement target power
