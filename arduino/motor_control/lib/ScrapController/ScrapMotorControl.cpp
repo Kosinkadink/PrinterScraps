@@ -67,6 +67,10 @@ void ScrapMotorControl::reset() {
 	prevTime = 0;
 }
 
+void ScrapMotorControl::stop() {
+	speedGoal = 0;
+}
+
 void ScrapMotorControl::setSpeed(float newSpeed) {
 	speedGoal = newSpeed;
 }
@@ -92,12 +96,21 @@ void ScrapMotorControl::performMovement() {
 		int powChange = 0;
 		// change power according to proportion of speeds
 		if (currSpeed < speedGoal) {
-			powChange = (int)mapFloat(speedGoal/currSpeed,1.0,2.0,1.0,4.0);
-			motor->setPower(motor->getPower()+powChange);
+			powChange = (int)mapFloat(speedGoal/currSpeed,1.0,2.0,1.0,6.0);
+			motor->setPower(max(minPower,motor->getPower()+powChange));
 		}
 		else if (currSpeed > speedGoal) {
-			powChange = (int)mapFloat(currSpeed/speedGoal,1.0,2.0,1.0,4.0);
-			motor->setPower(motor->getPower()-powChange);
+			powChange = (int)mapFloat(currSpeed/speedGoal,1.0,2.0,1.0,6.0);
+			motor->setPower(max(minPower,motor->getPower()-powChange));
 		}
 	}
+}
+
+// change speed by proportion
+void ScrapMotorControl::incrementSpeed(float prop) {
+	speedGoal += (speedGoal*prop);
+}
+
+void ScrapMotorControl::decrementSpeed(float prop) {
+	speedGoal -= (speedGoal*prop);
 }

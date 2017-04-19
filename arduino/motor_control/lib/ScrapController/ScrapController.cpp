@@ -11,6 +11,7 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
+	speedControl1.setMinPower(minSlowPower);
 	stop();
 }
 
@@ -19,23 +20,24 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwit
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
+	speedControl1.setMinPower(minSlowPower);
 	attachSwitch1(swi1);
 	stop();
 }
 
 // move back until switches are activated
 bool ScrapController::performReset() {
-	speedControl1.setSpeed(0);
+	speedControl1.stop();
 	motor1->setDirection(-1);
 	// check if switch is pressed
 	if (switch1->getIfPressed()) {
-		speedControl1.setSpeed(0);
+		speedControl1.stop();
 		encoder1->resetCount();
 		speedControl1.performMovement();
 		return true;
 	}
 	else {
-		speedControl1.setSpeed(0.0007);
+		speedControl1.setSpeed(0.0011);
 		speedControl1.performMovement();
 		return false;
 	}
@@ -44,18 +46,19 @@ bool ScrapController::performReset() {
 bool ScrapController::set(int g1) {
 	goal1 = g1;
 	// set a smaller slowdown thresh if this is a small movement
+	/*
 	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
 		slowdownThresh = shortSlowdownThresh;
 	}
 	else {
 		slowdownThresh = slowdownGLOBALThresh;
-	}
+	}*/
 	powerInit = powerGLOBALInit;
 	return checkIfDone();
 }
 
 void ScrapController::stop() {
-	speedControl1.setSpeed(0);
+	speedControl1.stop();
 	speedControl1.performMovement();
 }
 
@@ -99,12 +102,7 @@ bool ScrapController::performMovementSpeed() {
 // calculate speed to give motor
 float ScrapController::calcSpeed1() {
 	int diff = getDiff1();
-	if (diff > slowdownThresh) {
-		return speedControl1.getSpeedGoal();
-	}
-	else {
-		return speedControl1.convertToSpeed(map(diff,1,slowdownThresh,encTolerance,slowdownThresh));
-	}
+	return speedControl1.convertToSpeed(map(diff,1,slowdownThresh,minEncSpeed,maxEncSpeed));
 }
 
 
@@ -122,6 +120,17 @@ int ScrapController::calcPower1() {
 int ScrapController::getDiff1() {
 	return abs(encoder1->getCount() - goal1);
 }
+
+
+// increment or decrement speed
+void ScrapController::incrementSpeed(float prop) {
+	speedControl1.incrementSpeed(prop);
+}
+
+void ScrapController::decrementSpeed(float prop) {
+	speedControl1.decrementSpeed(prop);
+}
+
 
 // increment or decrement target power
 void ScrapController::incrementPower(int val) {

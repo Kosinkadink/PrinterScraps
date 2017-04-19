@@ -16,6 +16,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 	attachEncoder2(enc2);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	speedControl2 = ScrapMotorControl(*motor2,*encoder2);
+	speedControl1.setMinPower(minSlowPower1);
+	speedControl2.setMinPower(minSlowPower2);
 	stop();
 }
 
@@ -28,6 +30,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 	attachEncoder2(enc2);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	speedControl2 = ScrapMotorControl(*motor2,*encoder2);
+	speedControl1.setMinPower(minSlowPower1);
+	speedControl2.setMinPower(minSlowPower2);
 	attachSwitch1(swi1);
 	attachSwitch2(swi2);
 	stop();
@@ -35,8 +39,8 @@ ScrapDualController::ScrapDualController(ScrapMotor& mot1, ScrapMotor& mot2, Scr
 
 // move back until switches are activated
 bool ScrapDualController::performReset() {
-	speedControl1.setSpeed(0);
-	speedControl2.setSpeed(0);
+	speedControl1.stop();
+	speedControl2.stop();
 	motor1->setDirection(-1);
 	motor2->setDirection(-1);
 	// check if both switches are pressed
@@ -55,14 +59,14 @@ bool ScrapDualController::performReset() {
 		}
 		else {
 			//motor1->setMotor(-225);
-			speedControl1.setSpeed(0.0007);
+			speedControl1.setSpeed(0.0011);
 		}
 		if (switch2->getIfPressed()) {
 			speedControl2.setSpeed(0);
 		}
 		else {
 			//motor2->setMotor(-225);
-			speedControl2.setSpeed(0.0007);
+			speedControl2.setSpeed(0.0011);
 		}
 		speedControl1.performMovement();
 		speedControl2.performMovement();
@@ -73,7 +77,7 @@ bool ScrapDualController::performReset() {
 bool ScrapDualController::set(int g1, int g2) {
 	goal1 = g1;
 	goal2 = g2;
-	// set a smaller slowdown thresh if this is a small movement
+	/*// set a smaller slowdown thresh if this is a small movement
 	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
 		slowdownThresh1 = shortSlowdownThresh;
 	}
@@ -85,7 +89,7 @@ bool ScrapDualController::set(int g1, int g2) {
 	}
 	else {
 		slowdownThresh2 = slowdownGLOBALThresh;
-	}
+	}*/
 	powerInit1 = powerGLOBALInit;
 	powerInit2 = powerGLOBALInit;
 	return checkIfDone();
@@ -131,6 +135,59 @@ bool ScrapDualController::performMovement() {
 
 }
 
+bool ScrapDualController::performMovementSpeed() {
+	//check if already done moving
+	if (checkIfDone()) { 
+		stop();
+		return true;
+	}
+	//else, gotta do stuff
+	if (checkIfDone1()) {
+		speedControl1.stop();
+	}
+	else {
+		if (encoder1->getCount() < goal1) {
+			speedControl1.setControl(calcSpeed1());
+		}
+		else {
+			speedControl1.setControl(-calcSpeed1());
+		}
+	}
+	if (checkIfDone2()) {
+		speedControl2.stop();
+	}
+	else {
+		if (encoder2->getCount() < goal2) {
+			speedControl2.setControl(calcSpeed2());
+		}
+		else {
+			speedControl2.setControl(-calcSpeed2());
+		}
+	}
+	// based on separation, balance power of each motor
+	balanceSpeed();
+	// now execute movement
+	speedControl1.performMovement();
+	speedControl2.performMovement();
+	
+	return false;
+
+}
+
+
+// calculate speed to give motor
+float ScrapDualController::calcSpeed1() {
+	int diff = getDiff1();
+	return speedControl1.convertToSpeed(map(diff,1,slowdownThresh1,minEncSpeed,maxEncSpeed));
+}
+
+// calculate speed to give motor
+float ScrapDualController::calcSpeed2() {
+	int diff = getDiff2();
+	return speedControl2.convertToSpeed(map(diff,1,slowdownThresh2,minEncSpeed,maxEncSpeed));
+}
+
+
 // calculate power to give motor
 int ScrapDualController::calcPower1() {
 	int diff = abs(encoder1->getCount() - goal1);
@@ -152,10 +209,32 @@ int ScrapDualController::calcPower2() {
 	}
 }
 
-void ScrapDualController::stop() {
-	motor1->stop();
-	motor2->stop();
+int ScrapDualController::getDiff1() {
+	return abs(encoder1->getCount() - goal1);
 }
+
+int ScrapDualController::getDiff2() {
+	return abs(encoder2->getCount() - goal2);
+}
+
+void ScrapDualController::stop() {
+	speedControl1.setSpeed(0);
+	speedControl2.setSpeed(0);
+	speedControl1.performMovement();
+	speedControl2.performMovement();
+}
+
+// increment or decrement target speed
+void ScrapDualController::incrementSpeed(float prop) {
+	speedControl1.incrementSpeed(prop);
+	speedControl2.incrementSpeed(prop);
+}
+
+void ScrapDualController::decrementSpeed(float prop) {
+	speedControl1.decrementSpeed(prop);
+	speedControl2.decrementSpeed(prop);
+}
+
 
 // increment or decrement target power
 void ScrapDualController::incrementPower(int val) {
@@ -190,6 +269,32 @@ void ScrapDualController::balancePower() {
 	}
 }
 
+void ScrapDualController::balanceSpeed() {
+	float prop = 0.4;
+	
+	// if 1 too far ahead, balance power towards 2
+	if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() >= diffTolerance) {
+		moveSpeedToward2(prop);
+	}
+	// if 2 too far ahead, balance power towards 1
+	else if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() <= -diffTolerance) {
+		moveSpeedToward1(prop);
+	}
+	// otherwise, do not change speed
+}
+
+// balance speed
+void ScrapDualController::moveSpeedToward1(float prop) {
+	speedControl1.incrementSpeed(prop);
+	speedControl2.decrementSpeed(prop/2.0);
+}
+
+void ScrapDualController::moveSpeedToward2(float prop) {
+	speedControl1.decrementSpeed(prop/2.0);
+	speedControl2.incrementSpeed(prop);
+}
+
+// balance power
 void ScrapDualController::movePowerToward1(int val) {
 	powerInit1 = min(255,motor1->getPower()+val);
 	powerInit2 = max(minSlowPower2,motor2->getPower()-val);

@@ -48,6 +48,23 @@ bool ScrapFullController::performMovement() {
 	
 }
 
+bool ScrapFullController::performMovementSpeed() {
+	// if done moving, report back accordingly
+	if (checkIfDone()) {
+		stop();
+		desiredProportion = 0;
+		return true;
+	}
+	// else, balance power to promote proportional movement
+	balanceSpeed();
+	// have each controller do its own movement
+	bool isDone1 = xControl->performMovementSpeed();
+	bool isDone2 = yControl->performMovementSpeed();
+	// report back accordingly
+	return isDone1 && isDone2;
+	
+}
+
 
 // balance power to maintain proportional movement
 void ScrapFullController::balancePower() {
@@ -73,6 +90,27 @@ void ScrapFullController::balancePower() {
 	}
 }
 
+
+// balance speed to maintain proportional movement
+void ScrapFullController::balanceSpeed() {
+	float prop = 0.1;
+	// if proportion was zero, do not worry about balancing
+	if (desiredProportion == 0) {
+		return;
+	}
+	// get current proportion
+	float currentProportion = getMovementProportion();
+	// if current proportion is greater, then move power to Y
+	if (currentProportion*(1.0+diffDecim) > desiredProportion) {
+		moveSpeedTowardX(prop);
+	}
+	// else if opposite, move power to X
+	else if (currentProportion*(1.0-diffDecim) < desiredProportion) {
+		moveSpeedTowardY(prop);
+	}
+}
+
+
 // calculate current proportion
 float ScrapFullController::getMovementProportion() {
 	// get x remaining distance
@@ -87,6 +125,18 @@ float ScrapFullController::getMovementProportion() {
 		return (float)x_remains/(float)y_remains;
 	}
 }
+
+// move power towards X or Y motors
+void ScrapFullController::moveSpeedTowardX(float prop) {
+	xControl->incrementSpeed(prop);
+	yControl->decrementSpeed(prop);
+}
+
+void ScrapFullController::moveSpeedTowardY(float prop) {
+	xControl->decrementSpeed(prop);
+	yControl->incrementSpeed(prop);
+}
+
 
 // move power towards X or Y motors
 void ScrapFullController::movePowerTowardX(int val) {
