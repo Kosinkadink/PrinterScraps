@@ -3,11 +3,10 @@
 //ScrapController::
 
 ScrapController::ScrapController() {
-	powerInit = powerGLOBALInit;
+	
 }
 
 ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
-	powerInit = powerGLOBALInit;
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
@@ -16,7 +15,6 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 }
 
 ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwitch& swi1) {
-	powerInit = powerGLOBALInit;
 	attachMotor1(mot1);
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
@@ -45,15 +43,6 @@ bool ScrapController::performReset() {
 
 bool ScrapController::set(int g1) {
 	goal1 = g1;
-	// set a smaller slowdown thresh if this is a small movement
-	/*
-	if (abs(goal1-encoder1->getCount()) <= slowdownGLOBALThresh) {
-		slowdownThresh = shortSlowdownThresh;
-	}
-	else {
-		slowdownThresh = slowdownGLOBALThresh;
-	}*/
-	powerInit = powerGLOBALInit;
 	return checkIfDone();
 }
 
@@ -63,25 +52,6 @@ void ScrapController::stop() {
 }
 
 bool ScrapController::performMovement() {
-	//check if already done moving
-	if (checkIfDone()) { 
-		stop();
-		return true;
-	}
-	//else, gotta do stuff
-	else {
-		if (encoder1->getCount() < goal1) {
-			motor1->setMotor(calcPower1());
-		}
-		else {
-			motor1->setMotor(-calcPower1());
-		}
-	}
-	
-	return false;
-}
-
-bool ScrapController::performMovementSpeed() {
 	if (checkIfDone()) { 
 		stop();
 		return true;
@@ -105,22 +75,9 @@ float ScrapController::calcSpeed1() {
 	return speedControl1.convertToSpeed(map(diff,1,slowdownThresh,minEncSpeed,maxEncSpeed));
 }
 
-
-// calculate power to give motor
-int ScrapController::calcPower1() {
-	int diff = getDiff1();
-	if (diff > slowdownThresh) {
-		return powerInit;
-	}
-	else {
-		return map(diff,0,slowdownThresh,minSlowPower,powerInit);
-	}
-}
-
 int ScrapController::getDiff1() {
 	return abs(encoder1->getCount() - goal1);
 }
-
 
 // increment or decrement speed
 void ScrapController::incrementSpeed(float prop) {
@@ -131,19 +88,6 @@ void ScrapController::decrementSpeed(float prop) {
 	speedControl1.decrementSpeed(prop);
 }
 
-
-// increment or decrement target power
-void ScrapController::incrementPower(int val) {
-	powerInit = min(255,motor1->getPower()+val);
-}
-// decrement, but with a different slow power than for calcPower
-void ScrapController::decrementPower(int val) {
-	powerInit = max(minSlowPower,motor1->getPower()-val);
-}
-// set to powerInit
-void ScrapController::resumePower() {
-	powerInit = powerGLOBALInit;
-}
 
 // check if encoder count is within tolerance of goal
 bool ScrapController::checkIfDone1() {

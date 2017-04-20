@@ -97,14 +97,9 @@ class ScrapSwitch {
 class ScrapController {
 	private:
 		int goal1;
-		int powerGLOBALInit = 200; // default starting speed
-		int slowdownGLOBALThresh = 250; // default slowdown enc diff
-		int powerInit;
 		int encTolerance = 5; // +/- range around goal
 		int slowdownThresh = 200; // slow down range
-		int shortSlowdownThresh = 50; // used for short distances
 		int minSlowPower = 120; // minimum power
-		int minDecrementPower = 130; // minimum power of decrementPower
 		int minEncSpeed = 200;
 		int maxEncSpeed = 1000;
 		ScrapMotor* motor1;
@@ -121,18 +116,12 @@ class ScrapController {
 		int getDiff1();
 		bool checkIfDone1();
 		bool checkIfDone() { return checkIfDone1(); };
-		int calcPower1();
-		int calcPower() { return calcPower1(); };
 		float calcSpeed1();
 		float calcSpeed() { return calcSpeed1(); };
 		bool performMovement();
-		bool performMovementSpeed();
 		bool performReset();
 		void incrementSpeed(float prop = 0.1);
 		void decrementSpeed(float prop = 0.1);
-		void incrementPower(int val = 1);
-		void decrementPower(int val = 1);
-		void resumePower();
 		void stop();
 		int getCount1() { return encoder1->getCount(); };
 		int getCount() { return getCount1(); };
@@ -146,15 +135,10 @@ class ScrapDualController {
 	private:
 		int goal1;
 		int goal2;
-		int powerGLOBALInit = 255; // default starting speed
-		int slowdownGLOBALThresh = 300; // default slowdown enc diff
-		int powerInit1;
-		int powerInit2;
-		int diffTolerance = 25; //max diff in encoder values
+		int diffTolerance = 5; //max diff in encoder values
 		int encTolerance = 5; // max window of error from set goal
 		int slowdownThresh1 = 200; // slow down range
 		int slowdownThresh2 = 200; // slow down range
-		int shortSlowdownThresh = 75; // used for short distances
 		int minSlowPower1 = 197; // minimum power of motor1
 		int minSlowPower2 = 180; // minimum power of motor2
 		int minEncSpeed = 200;
@@ -183,22 +167,13 @@ class ScrapDualController {
 		bool checkIfDone2();
 		float calcSpeed1();
 		float calcSpeed2(); 
-		int calcPower1();
-		int calcPower2();
 		bool performMovement();
-		bool performMovementSpeed();
 		bool performReset();
 		void incrementSpeed(float prop = 0.1);
 		void decrementSpeed(float prop = 0.1);
-		void incrementPower(int val = 1);
-		void decrementPower(int val = 1);
-		void resumePower();
 		void moveSpeedToward1(float prop = 0.1);
 		void moveSpeedToward2(float prop = 0.1);
-		void movePowerToward1(int val = 1);
-		void movePowerToward2(int val = 1);
 		void balanceSpeed();
-		void balancePower();
 		void stop();
 		int getCount1() { return encoder1->getCount(); };
 		int getCount2() { return encoder2->getCount(); };
@@ -230,15 +205,11 @@ class ScrapFullController {
 		bool checkIfDoneY() { return yControl->checkIfDone(); };
 		bool checkIfDone() { return checkIfDoneX() && checkIfDoneY(); };
 		bool performMovement();
-		bool performMovementSpeed();
 		bool performReset();
 		float getMovementProportion();
 		void balanceSpeed(); 
-		void balancePower();
 		void moveSpeedTowardX(float prop = 0.1);
 		void moveSpeedTowardY(float prop = 0.1);
-		void movePowerTowardX(int val = 1);
-		void movePowerTowardY(int val = 1);
 		void stop() { xControl->stop(); yControl->stop(); };
 		void attachControllerX(ScrapController& xCont);
 		void attachControllerY(ScrapDualController& yCont);

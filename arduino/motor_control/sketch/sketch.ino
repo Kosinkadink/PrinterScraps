@@ -199,7 +199,7 @@ String performReset() {
 
 // perform all necessary movement to reach goal
 bool performActions() {
-	return fullControl.performMovementSpeed();
+	return fullControl.performMovement();
 }
 
 // used for testing in general
