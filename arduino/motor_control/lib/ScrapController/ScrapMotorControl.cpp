@@ -106,11 +106,13 @@ void ScrapMotorControl::performMovement() {
 	}
 }
 
-// change speed by proportion
-void ScrapMotorControl::incrementSpeed(float prop) {
-	speedGoal += (speedGoal*prop);
+// change speed by a speed diff not to exceed limits
+void ScrapMotorControl::incrementSpeed(int speedEncDiff) {
+	float speedDiff = convertToSpeed(speedEncDiff);
+	speedGoal = min(maxSpeed,speedGoal+speedDiff);
 }
 
-void ScrapMotorControl::decrementSpeed(float prop) {
-	speedGoal -= (speedGoal*prop);
+void ScrapMotorControl::decrementSpeed(int speedEncDiff) {
+	float speedDiff = convertToSpeed(speedEncDiff);
+	speedGoal = max(minSpeed,speedGoal-speedDiff);
 }

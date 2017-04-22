@@ -51,6 +51,8 @@ class ScrapMotorControl {
 		float speedGoal = 0.0;
 		int prevCount = 0;
 		int minPower = 50;
+		float minSpeed;
+		float maxSpeed;
 		ScrapMotor* motor;
 		ScrapEncoder* encoder;
 		float calcSpeed(); // calculates speed and updates relevant vals
@@ -59,8 +61,10 @@ class ScrapMotorControl {
 		ScrapMotorControl(ScrapMotor& mot, ScrapEncoder& enc);
 		void setControl(float newSpeed); // set direction + speed
 		void setSpeed(float newSpeed); // set direction only
-		void incrementSpeed(float prop = 0.1);
-		void decrementSpeed(float prop = 0.1);
+		void setMinSpeed(float newMin) { minSpeed = newMin; };
+		void setMaxSpeed(float newMax) { maxSpeed = newMax; };
+		void incrementSpeed(int speedEncDiff);
+		void decrementSpeed(int speedEncDiff);
 		float mapFloat(float x, float in_min, float in_max, float out_min, float out_max);
 		float constrainFloat(float x, float min, float max);
 		float convertToSpeed(int encPerSec);
@@ -120,8 +124,8 @@ class ScrapController {
 		float calcSpeed() { return calcSpeed1(); };
 		bool performMovement();
 		bool performReset();
-		void incrementSpeed(float prop = 0.1);
-		void decrementSpeed(float prop = 0.1);
+		void incrementSpeed(int speedEncDiff);
+		void decrementSpeed(int speedEncDiff);
 		void stop();
 		int getCount1() { return encoder1->getCount(); };
 		int getCount() { return getCount1(); };
@@ -135,7 +139,7 @@ class ScrapDualController {
 	private:
 		int goal1;
 		int goal2;
-		int diffTolerance = 25; //max diff in encoder values
+		int diffTolerance = 50; //max diff in encoder values
 		int encTolerance = 5; // max window of error from set goal
 		int slowdownThresh1 = 200; // slow down range
 		int slowdownThresh2 = 200; // slow down range
@@ -143,6 +147,7 @@ class ScrapDualController {
 		int minSlowPower2 = 180; // minimum power of motor2
 		int minEncSpeed = 200;
 		int maxEncSpeed = 1000;
+		int encSpeedBalance = 10;
 		ScrapMotor* motor1;
 		ScrapMotor* motor2;
 		ScrapEncoder* encoder1;
@@ -169,10 +174,10 @@ class ScrapDualController {
 		float calcSpeed2(); 
 		bool performMovement();
 		bool performReset();
-		void incrementSpeed(float prop = 0.1);
-		void decrementSpeed(float prop = 0.1);
-		void moveSpeedToward1(float prop = 0.1);
-		void moveSpeedToward2(float prop = 0.1);
+		void incrementSpeed(int speedEncDiff);
+		void decrementSpeed(int speedEncDiff);
+		void moveSpeedToward1(int speedEncDiff);
+		void moveSpeedToward2(int speedEncDiff);
 		void balanceSpeed();
 		void stop();
 		int getCount1() { return encoder1->getCount(); };
@@ -193,6 +198,7 @@ class ScrapFullController {
 		ScrapDualController* yControl;
 		float diffDecim = 0.01; // percentage diff from desired proportion
 		float desiredProportion; // x_goal/y_goal proportion
+		int encSpeedBalance = 30;
 	public:
 		ScrapFullController();
 		ScrapFullController(ScrapController& xCont, ScrapDualController& yCont);
@@ -208,8 +214,8 @@ class ScrapFullController {
 		bool performReset();
 		float getMovementProportion();
 		void balanceSpeed(); 
-		void moveSpeedTowardX(float prop = 0.1);
-		void moveSpeedTowardY(float prop = 0.1);
+		void moveSpeedTowardX(int speedEncDiff);
+		void moveSpeedTowardY(int speedEncDiff);
 		void stop() { xControl->stop(); yControl->stop(); };
 		void attachControllerX(ScrapController& xCont);
 		void attachControllerY(ScrapDualController& yCont);

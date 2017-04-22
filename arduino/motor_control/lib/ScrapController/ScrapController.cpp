@@ -11,6 +11,8 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1) {
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	speedControl1.setMinPower(minSlowPower);
+	speedControl1.setMinSpeed(speedControl1.convertToSpeed(minEncSpeed));
+	speedControl1.setMaxSpeed(speedControl1.convertToSpeed(maxEncSpeed));
 	stop();
 }
 
@@ -19,6 +21,8 @@ ScrapController::ScrapController(ScrapMotor& mot1, ScrapEncoder& enc1, ScrapSwit
 	attachEncoder1(enc1);
 	speedControl1 = ScrapMotorControl(*motor1,*encoder1);
 	speedControl1.setMinPower(minSlowPower);
+	speedControl1.setMinSpeed(speedControl1.convertToSpeed(minEncSpeed));
+	speedControl1.setMaxSpeed(speedControl1.convertToSpeed(maxEncSpeed));
 	attachSwitch1(swi1);
 	stop();
 }
@@ -80,12 +84,12 @@ int ScrapController::getDiff1() {
 }
 
 // increment or decrement speed
-void ScrapController::incrementSpeed(float prop) {
-	speedControl1.incrementSpeed(prop);
+void ScrapController::incrementSpeed(int speedEncDiff) {
+	speedControl1.incrementSpeed(speedEncDiff);
 }
 
-void ScrapController::decrementSpeed(float prop) {
-	speedControl1.decrementSpeed(prop);
+void ScrapController::decrementSpeed(int speedEncDiff) {
+	speedControl1.decrementSpeed(speedEncDiff);
 }
 
 
