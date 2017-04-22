@@ -159,7 +159,7 @@ void ScrapDualController::decrementSpeed(float prop) {
 
 void ScrapDualController::balanceSpeed() {
 	float prop = 0.4;
-	
+	float common_speed;
 	// if 1 too far ahead, balance power towards 2
 	if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() >= diffTolerance) {
 		moveSpeedToward2(prop);
@@ -168,7 +168,14 @@ void ScrapDualController::balanceSpeed() {
 	else if ((encoder1->getCount() - encoder2->getCount())*motor1->getDirection() <= -diffTolerance) {
 		moveSpeedToward1(prop);
 	}
-	// otherwise, do not change speed
+	// otherwise, make speeds match if possible
+	else {
+		if (speedControl1.getSpeedGoal() != 0 && speedControl1.getSpeedGoal() != 0) {
+			common_speed = (speedControl1.getSpeedGoal() + speedControl2.getSpeedGoal())/2.0;
+			speedControl1.setSpeed(common_speed);
+			speedControl2.setSpeed(common_speed);
+		}
+	}
 }
 
 // balance speed

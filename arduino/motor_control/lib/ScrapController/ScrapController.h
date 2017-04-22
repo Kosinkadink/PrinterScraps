@@ -135,7 +135,7 @@ class ScrapDualController {
 	private:
 		int goal1;
 		int goal2;
-		int diffTolerance = 5; //max diff in encoder values
+		int diffTolerance = 25; //max diff in encoder values
 		int encTolerance = 5; // max window of error from set goal
 		int slowdownThresh1 = 200; // slow down range
 		int slowdownThresh2 = 200; // slow down range
