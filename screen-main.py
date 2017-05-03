@@ -7,7 +7,7 @@ from scrap.ui import UI
 conf_dict = read_config("conf.txt")
 
 # create ScrapInterface
-#scrap = ScrapInterface(conf_dict)
+scrap = ScrapInterface(conf_dict)
 # create UI
 ui = UI(conf_dict)
 
@@ -19,7 +19,7 @@ keepGoing = True
 
 while keepGoing:
 	# wait a little
-	time.sleep(0.05)
+	#time.sleep(0.05)
 	ui.performUI()
 	# make empty command list
 	parse_inputs = []
@@ -50,13 +50,13 @@ while keepGoing:
 		inp = parse_inp.strip()
 
 		if inp.lower() == 'r':
-			#wait_till_done(scrap.reset())
+			wait_till_done(scrap.reset())
 			doneYet = True
 		elif inp.lower() == 'u':
-			#wait_till_done(scrap.pen_up())
+			wait_till_done(scrap.pen_up())
 			doneYet = True
 		elif inp.lower() == 'd':
-			#wait_till_done(scrap.pen_down())
+			wait_till_done(scrap.pen_down())
 			doneYet = True
 
 		if not doneYet:
@@ -67,20 +67,20 @@ while keepGoing:
 			# do this if NOT from twitch
 			if not isFromUI:
 				if comm == 's':
-					#wait_till_done(scrap.set_coords(coords))
+					wait_till_done(scrap.set_coords(coords))
 					pass
 				elif comm == 'sp':
-					#wait_till_done(scrap.set_coords(coords,passive=True))
+					wait_till_done(scrap.set_coords(coords,passive=True))
 					pass
 			# do this if from UI
 			else:
 				if comm == 's':
-					#wait_till_done(scrap.set_coords(coords,passive=True))
+					wait_till_done(scrap.set_coords(coords,passive=True))
 					pass
 				elif comm == 'r':
-					#wait_till_done(scrap.reset())
+					wait_till_done(scrap.reset())
 					pass
 
 
-#scrap.stop()
+scrap.stop()
 time.sleep(0.25)
