@@ -24,6 +24,14 @@ class ScrapInterface(object):
 		return self.movement.doCommand("r")
 
 
+	### pen controls
+	def pen_up(self):
+		return self.movement.doCommand("u")
+
+	def pen_down(self):
+		return self.movement.doCommand("d")
+
+
 	### absolute positioning
 	def set_x(self,x_inp):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0:
@@ -41,7 +49,7 @@ class ScrapInterface(object):
 
 	def set_coords(self,coords,passive=False):
 		return self.set_coords_indiv(coords[0],coords[1],passive)
-		
+
 	
 	def set_coords_indiv(self,x_inp,y_inp,passive=False):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0 and int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:

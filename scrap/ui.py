@@ -13,9 +13,9 @@ class UI(object):
 		self.pipeInside = child_conn
 
 		self.conf = conf
-		self.screen = pygame.display.set_mode((int(self.conf["SCREEN_X"]),int(self.conf["SCREEN_Y"])))
+		self.screen = pygame.display.set_mode((int(self.conf["WINDOW_X"]),int(self.conf["WINDOW_Y"])))
 
-		self.armScreen = ArmControlScreen(self.screen)
+		self.armScreen = ArmControlScreen(self.screen,self.conf)
 		
 		pygame.display.set_caption("UMKC PrinterBot Control")
 		self.clock = pygame.time.Clock()
@@ -43,14 +43,21 @@ class UI(object):
 			self.message = self.convertCoordToScrap(screenValue[1])
 			if self.message == self.message_prev:
 				pass
+			elif self.message == None:
+				pass
 			else:
 				self.newMessage.set()
 				self.message_prev = self.message
+		elif screenValue[0] == 'MESSAGE':
+			self.message = screenValue[1]
+			self.newMessage.set()
 		# update screen
 		pygame.display.update()
-		self.clock.tick(10)
+		self.clock.tick(int(self.conf["UI_FPS"]))
 
 	def convertCoordToScrap(self, coord):
+		if coord[0] > int(self.conf["SCREEN_X"]) or coord[1] > int(self.conf["SCREEN_Y"]):
+			return None
 		c1 = coord[0]*int(self.conf["X_MAX"])/int(self.conf["SCREEN_X"])
 		c2 = coord[1]*int(self.conf["Y_MAX"])/int(self.conf["SCREEN_Y"])
 		return (c1,c2)
@@ -75,17 +82,28 @@ class UI(object):
 
 class ArmControlScreen(object):
 
-	def __init__(self,screen):
-		self.global_objects = []
+	def __init__(self,screen,conf):
 		self.screen = screen
-		self.mouse = MouseEvents()
+		self.conf = conf
+		self.global_objects = []
+		# add buttons
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,50),(75,50),"r","Reset"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,150),(75,50),"u","Pen Up"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,250),(75,50),"d","Pen Down"))
+		
+		self.mouse = MouseEvents(self.global_objects)
+		self.prev_coords = (0,0)
+		self.touchArea = pygame.Rect(0,0,int(self.conf["SCREEN_X"]),int(self.conf["SCREEN_Y"]))
 
 	def handleEvents(self):
+		mouseCommand = None
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				return self.signal_QUIT()
 			if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]:
-				self.mouse.handleMouseEvent(event)
+				mouseCommand = self.mouse.handleMouseEvent(event)
+		if mouseCommand != None:
+			return self.signal_MESSAGE(mouseCommand)
 		return self.signal_COORDS()
 
 	def performActions(self):
@@ -94,13 +112,23 @@ class ArmControlScreen(object):
 
 	def draw(self):
 		self.screen.fill((220, 220, 220))
-		pygame.draw.circle(self.screen,(155,0,0),self.mouse.coords,10)
+		pygame.draw.rect(self.screen,(0,0,0),self.touchArea)
+		if self.touchArea.collidepoint(self.mouse.coords):
+			pygame.draw.circle(self.screen,(155,0,0),self.mouse.coords,10)
+			self.prev_coords = self.mouse.coords
+		else:
+			pygame.draw.circle(self.screen,(155,0,0),self.prev_coords,10)
+		for obj in self.global_objects:
+			obj.draw()
 
 	def signal_QUIT(self):
 		return ('QUIT',None)
 
 	def signal_COORDS(self):
 		return ('COORDS',self.mouse.coords)
+
+	def signal_MESSAGE(self,message):
+		return ('MESSAGE',message)
 
 
 class MouseEvents(object):
@@ -110,16 +138,52 @@ class MouseEvents(object):
 	held = False
 	curObject = None
 
-	def __init__(self):
-		pass
+	def __init__(self,objects=[]):
+		self.OBJECTS = objects
 
 	def handleMouseEvent(self,event):
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			self.held = True
 			self.coords = pygame.mouse.get_pos()
+			for obj in self.OBJECTS:
+				tempRect = pygame.Rect(obj.OFFSETS[0],obj.OFFSETS[1],obj.TOTAL_WIDTH,obj.TOTAL_HEIGHT) 
+				if tempRect.collidepoint(self.coords):
+					return obj.handleMouseEvent(event)
 		elif event.type == pygame.MOUSEBUTTONUP:
 			self.held = False
+		return None
 
 	def performActions(self):
 		if self.held:
 			self.coords = pygame.mouse.get_pos()
+
+
+class Button(object):
+
+	def __init__(self,screen,coords,size,message,text_content):
+		self.screen = screen
+		self.OFFSETS = coords
+		self.TOTAL_WIDTH = size[0]
+		self.TOTAL_HEIGHT = size[1]
+		self.MESSAGE = message
+		# button box
+		self.obj = pygame.Rect(self.OFFSETS[0],self.OFFSETS[1],self.TOTAL_WIDTH,self.TOTAL_HEIGHT)
+		# text stuff
+		self.text_color = (255, 255, 255)
+		self.font = pygame.font.Font(None, 20)
+		self.text_content = text_content
+		self.text = self.font.render(self.text_content, 1, self.text_color)
+		self.textpos = self.text.get_rect()
+		self.textpos.center = self.obj.center
+		
+	def handleMouseEvent(self,event):
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			return self.MESSAGE
+		else:
+			return None
+
+	def draw(self):
+		pygame.draw.rect(self.screen,(255,0,0),self.obj)
+		self.screen.blit(self.text, self.textpos)
+
+		
