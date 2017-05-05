@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <Wire.h>
+#include <Servo.h>
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
 
@@ -28,6 +29,10 @@
 #define SWITCH_PIN2 24
 #define SWITCH_PIN3 26
 
+#define SERVO_PIN1 30
+// pen positions
+#define PEN_UP 75
+#define PEN_DOWN 10
 
 // LCD DEFINITIONS
 Adafruit_SSD1306 display(-1);
@@ -47,6 +52,8 @@ ScrapDualController dualControl(motorLeftY,motorRightY,encoderLeftY,encoderRight
 ScrapController uniControl(motorAxisX,encoderAxisX,switchAxisX);
 // finall create ScrapFullController
 ScrapFullController fullControl(uniControl,dualControl);
+// create servo
+Servo servoPen;
 
 
 // delay time
@@ -64,6 +71,9 @@ String response; // response returned to main program
 void setup() {
 	//initialize encoders
 	initEncoders();
+	//initialize servo
+	servoPen.attach(SERVO_PIN1);
+	servoPen.write(PEN_UP);
 	//display stuff
 	display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	display.display();
@@ -158,6 +168,14 @@ String interpretCommand() {
 		responseString = "1";
 		returnString = performReset();
 	}
+	else if (command == "u") {
+		responseString = "1";
+		returnString = performPenUp();
+	}
+	else if (command == "d") {
+		responseString = "1";
+		returnString = performPenDown();
+	}
 	// check if mode-setting command
 	// TODO: add functionality to STREAMOUT
 	else if (command == "SYNCOUT") {
@@ -196,6 +214,15 @@ String performReset() {
 	return "1";
 }
 
+String performPenDown() {
+	servoPen.write(PEN_DOWN);
+	return "1";
+}
+
+String performPenUp() {
+	servoPen.write(PEN_UP);
+	return "1";
+}
 
 // perform all necessary movement to reach goal
 bool performActions() {
