@@ -15,15 +15,15 @@
 
 #define MOT1_PIND1 40
 #define MOT1_PIND2 42
-#define MOT1_PINPWM 44
+#define MOT1_PINPWM 5
 
 #define MOT2_PIND1 41
 #define MOT2_PIND2 43
-#define MOT2_PINPWM 45
+#define MOT2_PINPWM 6
 
 #define MOT3_PIND1 50
 #define MOT3_PIND2 48
-#define MOT3_PINPWM 46
+#define MOT3_PINPWM 7
 
 #define SWITCH_PIN1 22
 #define SWITCH_PIN2 24
@@ -31,8 +31,8 @@
 
 #define SERVO_PIN1 30
 // pen positions
-#define PEN_UP 75
-#define PEN_DOWN 10
+#define PEN_UP 145
+#define PEN_DOWN 75
 
 // LCD DEFINITIONS
 Adafruit_SSD1306 display(-1);
