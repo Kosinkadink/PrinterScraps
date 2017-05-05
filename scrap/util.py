@@ -7,6 +7,14 @@ __location__ = os.path.realpath(
 main_dir = os.path.realpath(os.path.join(__location__,'..'))
 sys.path.insert(0, main_dir)
 
+# read commands from file
+def read_commands(filename):
+	commands = []
+	with open(os.path.join(main_dir,filename),"rb") as read_file:
+		for line in read_file:
+			if line.strip(): 
+				commands.append(line.strip())
+	return commands
 
 # use to block until command is done executing
 def wait_till_done(commandObj):
