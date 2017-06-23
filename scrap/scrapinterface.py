@@ -7,14 +7,17 @@ main_dir = os.path.realpath(os.path.join(__location__,'../..'))
 sys.path.insert(0, main_dir)
 
 from util import ScrapException
-from arduinointerface import ArduinoInterface
-
+from arduinointerface import ArduinoInterface, ArduinoMockInterface
 
 class ScrapInterface(object):
 
 
 	def __init__(self, conf):
-		self.movement = ArduinoInterface(conf["move_ard_port"],conf["move_ard_baud"])
+		self.conf = conf
+		if not self.conf["DEBUG"]:
+			self.movement = ArduinoInterface(conf["move_ard_port"],conf["move_ard_baud"])
+		else:
+			self.movement = ArduinoMockInterface()
 		self.X_MAX = int(conf["X_MAX"])
 		self.Y_MAX = int(conf["Y_MAX"])
 

@@ -16,6 +16,28 @@ def read_commands(filename):
 				commands.append(line.strip())
 	return commands
 
+# create commands from line list, returns command list
+def create_commands(lines,saveAs=None):
+	commands = []
+	if saveAs is None:
+		saveAs = "faceToDraw.txt"
+
+	for line in lines:
+		for pointindx in range(0,len(line)):
+			if pointindx == 0:
+				commands.append("s {},{}".format(line[pointindx][0],line[pointindx][1]))
+				commands.append("d")
+				continue
+			commands.append("s {},{}".format(line[pointindx][0],line[pointindx][1]))
+		commands.append("u")
+	commands.append("r")
+
+	# write into file
+	with open(os.path.join(main_dir,saveAs),"wb") as write_file:
+		for command in commands:
+			write_file.write("{}\n".format(command))
+	return commands
+
 # use to block until command is done executing
 def wait_till_done(commandObj):
 	while not commandObj.checkDone():
