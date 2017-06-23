@@ -25,6 +25,9 @@ class ScrapInterface(object):
 
 
 	### pen controls
+	def pen_super_up(self):
+		return self.movement.doCommand("U")
+
 	def pen_up(self):
 		return self.movement.doCommand("u")
 

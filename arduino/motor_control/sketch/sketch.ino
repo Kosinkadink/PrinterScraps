@@ -31,6 +31,7 @@
 
 #define SERVO_PIN1 30
 // pen positions
+#define PEN_SUPER_UP 85
 #define PEN_UP 93
 #define PEN_DOWN 107
 
@@ -176,6 +177,10 @@ String interpretCommand() {
 		responseString = "1";
 		returnString = performPenDown();
 	}
+	else if (command == "U") {
+		responseString = "1";
+		returnString = performPenSuperUp();
+	}
 	// check if mode-setting command
 	// TODO: add functionality to STREAMOUT
 	else if (command == "SYNCOUT") {
@@ -223,6 +228,12 @@ String performPenDown() {
 String performPenUp() {
 	servoPen.write(PEN_UP);
 	delay(1000);
+	return "1";
+}
+
+String performPenSuperUp() {
+	servoPen.write(PEN_SUPER_UP);
+	delay(2000);
 	return "1";
 }
 

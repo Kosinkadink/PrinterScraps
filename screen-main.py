@@ -56,8 +56,11 @@ while keepGoing:
 			if inp.lower() == 'r':
 				wait_till_done(scrap.reset())
 				doneYet = True
-			elif inp.lower() == 'u':
+			elif inp == 'u':
 				wait_till_done(scrap.pen_up())
+				doneYet = True
+			elif inp == 'U':
+				wait_till_done(scrap.pen_super_up())
 				doneYet = True
 			elif inp.lower() == 'd':
 				wait_till_done(scrap.pen_down())
