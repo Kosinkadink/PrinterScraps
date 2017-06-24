@@ -31,8 +31,8 @@
 
 #define SERVO_PIN1 30
 // pen positions
-#define PEN_SUPER_UP 85
-#define PEN_UP 93
+#define PEN_SUPER_UP 80
+#define PEN_UP 85
 #define PEN_DOWN 107
 
 // LCD DEFINITIONS
@@ -221,13 +221,13 @@ String performReset() {
 
 String performPenDown() {
 	servoPen.write(PEN_DOWN);
-	delay(1000);
+	delay(2000);
 	return "1";
 }
 
 String performPenUp() {
 	servoPen.write(PEN_UP);
-	delay(1000);
+	delay(2000);
 	return "1";
 }
 
