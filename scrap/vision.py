@@ -22,7 +22,7 @@ class Vision(threading.Thread):
 		self.latest_frame = None
 		self.readyToDraw = False
 		self.linesToDraw = []
-		self.scale = 0.3
+		self.scale = 0.33
 
 	def run(self):
 		while self.keep_running:
