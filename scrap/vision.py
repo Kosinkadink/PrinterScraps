@@ -35,7 +35,10 @@ class Vision(threading.Thread):
 				self.getLinesFromFace()
 				
 	def getLinesFromFace(self):
-		faceImage = self.getFacesFromFrame(self.latest_frame)
+		if not int(self.conf["FRENCH_GIRL"]):
+			faceImage = self.getFacesFromFrame(self.latest_frame)
+		else:
+			faceImage = self.latest_frame
 		if faceImage is None:
 			print "No face found in image"
 			return None
