@@ -22,7 +22,7 @@ class Vision(threading.Thread):
 		self.latest_frame = None
 		self.readyToDraw = False
 		self.linesToDraw = []
-		self.scale = 0.33
+		self.scale = float(self.conf["IMG_SCALE"])
 
 	def run(self):
 		while self.keep_running:
@@ -33,6 +33,10 @@ class Vision(threading.Thread):
 				self.stop()
 			elif (key == ord("s")):
 				self.getLinesFromFace()
+			elif (key == ord("u")):
+				if self.latest_frame != None:
+					h, w = self.latest_frame.shape[:2]
+					print("{0},{1}".format(w, h))
 				
 	def getLinesFromFace(self):
 		if not int(self.conf["FRENCH_GIRL"]):
@@ -147,8 +151,15 @@ class Vision(threading.Thread):
 		h,w = cannyVersion.shape[:2]
 		return contours,h,w
 
-	def getCanny(self,frame):
-		return cv2.Canny(frame,40,180)
+	def getCanny(self,frame,sigma=0.10):
+		# return cv2.Canny(frame,40,180)
+		# compute the median of the single channel pixel intensities
+		v = np.median(frame)
+		# apply automatic Canny edge detection using the computed median
+		lower = int(max(0, (1.0 - sigma) * v))
+		upper = int(min(255, (1.0 + sigma) * v))
+		edged = cv2.Canny(frame, lower, upper)
+		return edged
 
 	def increase_contrast(self,img):
 		phi = 1.0

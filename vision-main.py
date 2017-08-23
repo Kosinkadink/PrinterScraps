@@ -11,6 +11,8 @@ conf_dict["DEBUG"] = int(conf_dict["DEBUG"])
 
 # open video camera
 camera_obj = cv2.VideoCapture(int(conf_dict["CAMERA_INDEX"]))
+camera_obj.set(3, int(conf_dict["CAMERA_X"]))
+camera_obj.set(4, int(conf_dict["CAMERA_Y"]))
 # start vision
 vision = Vision(conf_dict,camera_obj)
 vision.start()
