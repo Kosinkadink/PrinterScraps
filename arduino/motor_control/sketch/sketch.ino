@@ -59,6 +59,9 @@ Servo servoPen;
 
 // delay time
 const int delayTime = 2;
+// print out timer
+unsigned long currentTime;
+unsigned long printTime;
 // used for setting goal;
 int setGoal;
 
@@ -67,7 +70,8 @@ const int maxValues = 2;
 String command; // general command
 String values[maxValues]; // stores values for command
 String response; // response returned to main program
-
+int addTo = 0; // 0 for command, 1 for value
+char readIn;
 
 void setup() {
 	//initialize encoders
@@ -88,6 +92,7 @@ void setup() {
 	showText("setting goals");
 	fullControl.set(setGoal,setGoal);
 	showText("ready!");
+	currentTime = printTime = millis();
 	// start serial and signal to main program that we are connected
 	Serial.begin(115200);
 	Serial.write(1);
@@ -100,12 +105,11 @@ void loop () {
 
 	// if something in serial, parse it
 	if(Serial.available()){
-
-		int addTo = 0; // 0 for command, 1 for value
+		
 
 		while (Serial.available() > 0)
 		{
-			char readIn = (char)Serial.read();
+			readIn = (char)Serial.read();
 			if (readIn == '\n') {
 				break;
 			}
@@ -127,21 +131,29 @@ void loop () {
 			}
 		}
 		//clear anything remaining in serial
-		while (Serial.available() > 0) {
-			Serial.read();
-		}
-		response = interpretCommand();
-		Serial.println(response); //sends response with \n at the end
-		// empty out command and value strings
-		command = "";
-		for (int i = 0; i < maxValues; i++) {
-			values[i] = "";
+		//while (Serial.available() > 0) {
+		//	Serial.read();
+		//}
+		if (readIn == '\n') {
+			response = interpretCommand();
+			Serial.println(response); //sends response with \n at the end
+			// empty out command and value strings
+			command = "";
+			readIn = ' ';
+			addTo = 0;
+			for (int i = 0; i < maxValues; i++) {
+				values[i] = "";
+			}
 		}
 	}
 	// show statuses
-	showText(String(uniControl.getGoal())+','+String(dualControl.getGoal1()) 
-	+'\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())
-	+'\n'+String(uniControl.getCount1()));
+	currentTime = millis();
+	if (currentTime - printTime > 100) {
+		showText(String(uniControl.getGoal())+','+String(dualControl.getGoal1()) 
+		+'\n' + String(dualControl.getCount1())+'\n'+String(dualControl.getCount2())
+		+'\n'+String(uniControl.getCount1()));
+		printTime = currentTime;
+	}
 	// small delay
 	delay(delayTime);
 }

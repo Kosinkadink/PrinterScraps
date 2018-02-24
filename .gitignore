@@ -2,4 +2,4 @@
 conf-twitch.txt
 faceToDraw.txt
 .idea/*
-
+.build
