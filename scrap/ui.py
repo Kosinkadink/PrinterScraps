@@ -2,12 +2,13 @@ import pygame
 import threading
 from multiprocessing import Pipe
 
-pygame.init()
 
 class UI(object):
 
 	def __init__(self,conf):
 		#threading.Thread.__init__(self)
+		pygame.init()
+
 		parent_conn,child_conn = Pipe()
 		self.pipeOutside = parent_conn
 		self.pipeInside = child_conn
