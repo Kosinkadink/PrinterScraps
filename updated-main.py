@@ -36,7 +36,7 @@ def main():
 		# check for user input
 		user_inp = userInput.returnMessage()
 		ui_inp = ui.returnMessage()
-		inputs = [user_inp,ui_inp]
+		inputs = [user_inp, ui_inp]
 		for inp in inputs:
 			if inp != None:
 				print inp

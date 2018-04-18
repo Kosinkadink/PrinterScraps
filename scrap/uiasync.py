@@ -11,14 +11,13 @@ class UI_Async(ProcessDriver):
 		ProcessDriver.__init__(self, ui_process, (conf,))
 		self.daemon = True
 		self.message = ''
-		self.newMessage = threading.Event()
-		self.messageLock = threading.Lock()
+		self.newMessage = False
 
 	def markMessageRead(self):
-		self.newMessage.clear()
+		self.newMessage = False
 
 	def isNewMessage(self):
-		return self.newMessage.is_set()
+		return self.newMessage
 
 	def returnMessage(self):
 		if self.isNewMessage():
@@ -32,10 +31,10 @@ class UI_Async(ProcessDriver):
 	def handle_input(self, input_obj):
 		if isinstance(input_obj,type("")):
 			self.message = input_obj
-			self.newMessage.set()
+			self.newMessage = True
 		elif isinstance(input_obj,tuple):
-			self.message = "s {},{}".format(input_obj[0],input_obj[1])
-			self.newMessage.set()
+			self.message = "sp {},{}".format(input_obj[0],input_obj[1])
+			self.newMessage = True
 		elif input_obj is not None:
 			print("RECEIVED WEIRD INPUT: {}".format(input_obj))
 
@@ -148,9 +147,10 @@ class ArmControlScreen(object):
 		self.conf = conf
 		self.global_objects = []
 		# add buttons
-		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,50),(75,50),"r","Reset"))
-		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,150),(75,50),"u","Pen Up"))
-		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,250),(75,50),"d","Pen Down"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,25),(75,50),"r","Reset"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,125),(75,50),"u","Pen Up"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,225),(75,50),"d","Pen Down"))
+		self.global_objects.append(Button(self.screen,(int(self.conf["SCREEN_X"])+20,325),(75,50),"cancel","Cancel"))
 		
 		self.mouse = MouseEvents(self.global_objects)
 		self.prev_coords = (0,0)

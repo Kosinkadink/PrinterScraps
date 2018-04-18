@@ -176,7 +176,7 @@ def arduino_process(conf, comm_pipe):
 				# if is a printer command, add to queue
 				elif isinstance(received, PrinterCommand):
 					command_queue.append(received)
-					print("ADDED COMMAND TO QUEUE: ")
+					print("ADDED COMMAND TO QUEUE: {}".format(str(received)))
 			# if a command is not currently done, do nothing
 			if (current_command is not None and not current_command.checkDone()):
 				pass
@@ -187,10 +187,10 @@ def arduino_process(conf, comm_pipe):
 					pass
 				# otherwise, send command and set it to current command
 				else:
-					current_command = command_queue.popleft()
-					movement.doCommand(current_command.command,current_command.values)
+					printer_command = command_queue.popleft()
+					current_command = movement.doCommand(printer_command.command,printer_command.values)
 			# wait a bit to not max out the CPU
-			sleep(0.01)
+			sleep(0.001)
 
 	except Exception as e:
 		try:
