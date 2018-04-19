@@ -181,6 +181,7 @@ class Vision(threading.Thread):
 		# get image
 		ret = False
 		ret = self.cap.grab()
+		frame = None
 		if ret:
 			ret,frame = self.cap.retrieve()
 			#orig_frame = copy.copy(frame)
@@ -224,6 +225,17 @@ class Vision(threading.Thread):
 
 
 	def generateContoursCustom(self,frame):
+		# resize image to be managable
+		hframe,wframe = frame.shape[:2]
+		if hframe == wframe:
+			pass
+		elif hframe > wframe:
+			hframe = 640
+			wframe = int(640*(float(wframe)/hframe))
+		else:
+			wframe = 640
+			hframe = int(640*(float(hframe)/wframe))
+		frame = cv2.resize(frame, (wframe,hframe), interpolation=cv2.INTER_AREA)
 		# turn gray
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		#gray = cv2.cvtColor(cv2.resize(frame,(0,0),fx=self.scale,fy=self.scale), cv2.COLOR_BGR2GRAY)

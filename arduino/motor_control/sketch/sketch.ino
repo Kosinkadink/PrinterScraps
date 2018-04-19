@@ -32,7 +32,7 @@
 #define SERVO_PIN1 30
 // pen positions
 #define PEN_SUPER_UP 80
-#define PEN_UP 85
+#define PEN_UP 93
 #define PEN_DOWN 107
 
 // LCD DEFINITIONS
@@ -233,19 +233,31 @@ String performReset() {
 
 String performPenDown() {
 	servoPen.write(PEN_DOWN);
-	delay(2000);
+	unsigned long startingtime = millis();
+	while (millis() - startingtime <= 1000) {
+		fullControl.performMovement();
+		delay(delayTime);
+	}
 	return "1";
 }
 
 String performPenUp() {
 	servoPen.write(PEN_UP);
-	delay(2000);
+	unsigned long startingtime = millis();
+	while (millis() - startingtime <= 1000) {
+		fullControl.performMovement();
+		delay(delayTime);
+	}
 	return "1";
 }
 
 String performPenSuperUp() {
 	servoPen.write(PEN_SUPER_UP);
-	delay(2000);
+	unsigned long startingtime = millis();
+	while (millis() - startingtime <= 2000) {
+		fullControl.performMovement();
+		delay(delayTime);
+	}
 	return "1";
 }
 
