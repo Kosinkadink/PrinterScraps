@@ -62,6 +62,7 @@ class Vision(threading.Thread):
 		self.newMessage = False
 		self.allow_frameshot = True
 		self.scale = float(self.conf["IMG_SCALE"])
+		self.max_dim_size = int(self.conf["PICTURE_MAX_DIM"])
 
 	def returnMessage(self):
 		if self.newMessage:
@@ -85,7 +86,7 @@ class Vision(threading.Thread):
 				elif (key == ord("u")):
 					if self.latest_frame != None:
 						h, w = self.latest_frame.shape[:2]
-						print("{0},{1}".format(w, h))
+						#print("{0},{1}".format(w, h))
 		
 
 	def processImage(self,image=None):
@@ -227,15 +228,17 @@ class Vision(threading.Thread):
 	def generateContoursCustom(self,frame):
 		# resize image to be managable
 		hframe,wframe = frame.shape[:2]
-		if hframe == wframe:
-			pass
-		elif hframe > wframe:
-			hframe = 640
-			wframe = int(640*(float(wframe)/hframe))
-		else:
-			wframe = 640
-			hframe = int(640*(float(hframe)/wframe))
-		frame = cv2.resize(frame, (wframe,hframe), interpolation=cv2.INTER_AREA)
+		print hframe,wframe
+		if hframe > self.max_dim_size or wframe > self.max_dim_size:
+			if hframe != wframe:
+				if hframe > wframe:
+					newhframe = self.max_dim_size
+					newwframe = int(self.max_dim_size*(float(wframe)/hframe))
+					print wframe
+				elif hframe < wframe:
+					newwframe = self.max_dim_size
+					newhframe = int(self.max_dim_size*(float(hframe)/wframe))
+				frame = cv2.resize(frame, (newwframe,newhframe), interpolation=cv2.INTER_AREA)
 		# turn gray
 		gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 		#gray = cv2.cvtColor(cv2.resize(frame,(0,0),fx=self.scale,fy=self.scale), cv2.COLOR_BGR2GRAY)
@@ -257,16 +260,24 @@ class Vision(threading.Thread):
 			key = cv2.waitKey(self.millidelay) & 0xFF
 			if (key == ord("a")):
 				__, contours, hierarchy = cv2.findContours(edged.copy(),cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-				#print contours
+				# remove irrelevant contours
+				processed_contours = []
+				for contour in contours:
+					if len(contour) < 2:
+						pass
+					else:
+						processed_contours.append(contour)
+				print("PRE: {}, POST: {}".format(len(contours),len(processed_contours)))
+
 				print ("CONTOURS GENERATED")
 				h,w = edged.shape[:2]
 				contourImg = np.zeros((h,w,3), np.uint8)
-				cv2.drawContours(contourImg,contours,-1,(0,255,0),1)
+				cv2.drawContours(contourImg,processed_contours,-1,(0,255,0),1)
 				cv2.imshow('edged',contourImg)
 				cv2.waitKey(500) & 0xFF
 				cv2.destroyWindow('edged')
 				cv2.waitKey(self.millidelay) & 0xFF
-				return contours,h,w
+				return processed_contours,h,w
 
 
 
