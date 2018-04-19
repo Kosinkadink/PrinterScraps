@@ -59,7 +59,7 @@ class ArduinoMockInterface():
 			mockComm = CommRequest(requestCommand)
 			mockComm.markDone()
 			mockComm.setResponse("1")
-			print requestCommand
+			#print requestCommand
 			return mockComm
 	
 	def stop(self):

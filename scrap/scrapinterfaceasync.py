@@ -34,34 +34,40 @@ class ScrapInterfaceAsync(ProcessDriver):
 		self.daemon = True
 
 	def processInput(self, parse_inp):
-		try:
-			inp = parse_inp.strip()
+		arguments = []
+		if isinstance(parse_inp,list):
+			arguments = parse_inp
+		else:
+			arguments = [parse_inp]
+		for arg in arguments:
+			try:
+				inp = arg.strip()
 
-			if inp.lower() == 'r':
-				self.reset()
-			elif inp == 'u':
-				self.pen_up()
-			elif inp == 'U':
-				self.pen_super_up()
-			elif inp.lower() == 'd':
-				self.pen_down()
-			else:
-				comm,coords = inp.split()
-				coords = coords.strip().split(",")
-				if len(coords) < 2:
-					raise ValueError("use a comma to seperate coords")
-				# do this if NOT from twitch
-				#if not isFromUI:
-				if comm == 's':
-					self.set_coords(coords)
-				elif comm == 'sp':
-					self.set_coords(coords,passive=True)
-				elif comm == 'r':
+				if inp.lower() == 'r':
 					self.reset()
-		except ValueError as e:
-			print str(e)
-		except ScrapException as e:
-			print str(e)			
+				elif inp == 'u':
+					self.pen_up()
+				elif inp == 'U':
+					self.pen_super_up()
+				elif inp.lower() == 'd':
+					self.pen_down()
+				else:
+					comm,coords = inp.split()
+					coords = coords.strip().split(",")
+					if len(coords) < 2:
+						raise ValueError("use a comma to seperate coords")
+					# do this if NOT from twitch
+					#if not isFromUI:
+					if comm == 's':
+						self.set_coords(coords)
+					elif comm == 'sp':
+						self.set_coords(coords,passive=True)
+					elif comm == 'r':
+						self.reset()
+			except ValueError as e:
+				print str(e)
+			except ScrapException as e:
+				print str(e)			
 
 	### cancel print
 	def cancel(self):
@@ -164,7 +170,7 @@ def arduino_process(conf, comm_pipe):
 		# while alive, do stuff
 		while keep_running:
 			# check pipe for messages
-			if comm_pipe.poll():
+			while keep_running and comm_pipe.poll():
 				received = comm_pipe.recv()
 				if received == "EXIT":
 					keep_running = False
@@ -176,7 +182,7 @@ def arduino_process(conf, comm_pipe):
 				# if is a printer command, add to queue
 				elif isinstance(received, PrinterCommand):
 					command_queue.append(received)
-					print("ADDED COMMAND TO QUEUE: {}".format(str(received)))
+					#print("ADDED COMMAND TO QUEUE: {}".format(str(received)))
 			# if a command is not currently done, do nothing
 			if (current_command is not None and not current_command.checkDone()):
 				pass
