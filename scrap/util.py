@@ -10,12 +10,15 @@ sys.path.insert(0, main_dir)
 # read commands from file
 def read_commands(filename):
 	commands = []
-	with open(os.path.join(main_dir,filename),"rb") as read_file:
-		for line in read_file:
-			if line.strip(): 
-				commands.append(line.strip())
-	return commands
-
+	try:
+		with open(os.path.join(main_dir,filename),"rb") as read_file:
+			for line in read_file:
+				if line.strip(): 
+					commands.append(line.strip())
+		return commands
+	except Exception as e:
+		print(str(e))
+		return None
 # create commands from line list, returns command list
 def create_commands(lines,saveAs=None):
 	commands = []

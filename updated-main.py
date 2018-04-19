@@ -1,7 +1,7 @@
 from time import sleep
 from scrap.UserInput import UserInput
 from scrap.scrapinterfaceasync import ScrapInterfaceAsync
-from scrap.util import read_config
+from scrap.util import read_config, read_commands
 from scrap.uiasync import UI_Async
 from scrap.visionasync import Vision
 
@@ -55,6 +55,12 @@ def main():
 						# attempt to get second argument
 						x,imgname = inp.split()
 						vision.processImage(imgname)
+					elif inp.lower().startswith("load"):
+						# attempt to get second argument
+						x,filename = inp.split()
+						commands = read_commands(filename)
+						inputs.append(commands)
+						print("{} loaded! {} commands added.".format(filename,len(commands)))
 					else:
 						scrap.processInput(inp)
 				except AttributeError:
