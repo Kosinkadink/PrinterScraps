@@ -246,6 +246,12 @@ class Vision(threading.Thread):
 		# sharpen it
 		gray = self.sharpen_image(gray)
 		hframe,wframe = frame.shape[:2]
+		window_h = hframe
+		window_w = wframe
+		if hframe < self.max_dim_size:
+			window_h = self.max_dim_size
+		if wframe < self.max_dim_size:
+			window_w = self.max_dim_size
 		#cv2.imshow('gray',gray)
 		cv2.namedWindow('edged')
 		lowerDef,upperDef = self.getCannyMinMaxOnly(gray)
@@ -255,7 +261,7 @@ class Vision(threading.Thread):
 			lower = cv2.getTrackbarPos('Lower','edged')
 			upper = cv2.getTrackbarPos('Upper','edged')
 			edged = cv2.Canny(gray, lower, upper)
-			cv2.resizeWindow('edged', wframe,hframe)
+			cv2.resizeWindow('edged', window_w, window_h)
 			cv2.imshow('edged',edged)
 			key = cv2.waitKey(self.millidelay) & 0xFF
 			if (key == ord("a")):
