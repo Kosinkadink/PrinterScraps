@@ -28,6 +28,8 @@ class ScrapInterfaceAsync(ProcessDriver):
 
 	def __init__(self, conf):
 		self.conf = conf
+		self.X_OFFSET = int(conf["X_OFFSET"])
+		self.Y_OFFSET = int(conf["Y_OFFSET"])
 		self.X_MAX = int(conf["X_MAX"])
 		self.Y_MAX = int(conf["Y_MAX"])
 		ProcessDriver.__init__(self, arduino_process, (conf,))
@@ -110,8 +112,8 @@ class ScrapInterfaceAsync(ProcessDriver):
 	
 	def set_coords_indiv(self,x_inp,y_inp,passive=False):
 		if int(x_inp) <= self.X_MAX and int(x_inp) >= 0 and int(y_inp) <= self.Y_MAX and int(y_inp) >= 0:
-			x_inp = '%4d' % int(x_inp)
-			y_inp = '%4d' % int(y_inp)
+			x_inp = '%4d' % (int(x_inp)+self.X_OFFSET)
+			y_inp = '%4d' % (int(y_inp)+self.Y_OFFSET)
 			if not passive:
 				return self.doCommand("s",[x_inp,y_inp])
 			else:

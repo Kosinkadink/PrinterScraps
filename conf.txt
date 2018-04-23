@@ -1,5 +1,7 @@
 move_ard_port = /dev/arduino_maincontrol
 move_ard_baud = 115200
+X_OFFSET = 30
+Y_OFFSET = 0
 X_MAX = 3000
 Y_MAX = 3000
 SCREEN_X = 400
